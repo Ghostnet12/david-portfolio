@@ -1,0 +1,20 @@
+{
+  "name": "david-portfolio-backend",
+  "version": "1.0.0",
+  "description": "Back‑end for David Northrop's portfolio built with Express and MongoDB.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "David Northrop",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.19.2",
+    "mongoose": "^7.3.4",
+    "nodemailer": "^6.9.3"
+  }
+}

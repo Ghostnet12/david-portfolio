@@ -4,6 +4,33 @@
   --glow: 0 0 24px var(--neon), 0 0 64px var(--neon);
 }
 
+/* Sticky, full-bleed footer without touching HTML */
+html,
+body {
+  height: 100%;
+}
+body {
+  min-height: 100svh; /* cover viewport on mobile too */
+  display: flex;
+  flex-direction: column;
+}
+#starfield,
+nav,
+section,
+footer {
+  flex: 0 0 auto;
+}
+
+/* Push footer to bottom when content is short */
+footer {
+  margin-top: auto;
+  width: 100%;
+}
+
+/* Make footer content span the full screen width (not Tailwind's max container) */
+footer .container {
+  max-width: 100% !important; /* override Tailwind's container max-width */
+}
 /* Smooth scrolling + fixed navbar offset */
 html {
   scroll-behavior: smooth;

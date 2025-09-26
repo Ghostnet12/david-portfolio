@@ -188,7 +188,6 @@
         <div class="ticker lazy-load" aria-label="Site credit">
           <div class="ticker__inner" style="--speed: 18s">
             <ul class="ticker__list">
-              <li class="dot">•</li>
               <li class="ticker__item">
                 Made by <strong>Instant Canvas.io</strong>
               </li>
@@ -217,20 +216,20 @@
           About Me
         </h2>
 
-        <!-- STACKED PROFILE + ABOUT COPY -->
-        <div class="flex flex-col items-center text-center gap-8 mb-16">
-          <div class="relative w-64 h-64">
-            <div
-              class="profile-ring absolute -inset-3 rounded-full border-4 border-sky-400/60"
-            ></div>
-            <div
-              class="w-full h-full rounded-full bg-gradient-to-tr from-sky-500 to-fuchsia-600 flex items-center justify-center text-white text-5xl font-extrabold shadow-2xl"
-            >
-              DN
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 items-start mb-12">
+          <div class="flex justify-center md:col-span-1">
+            <div class="relative w-64 h-64">
+              <div
+                class="profile-ring absolute -inset-3 rounded-full border-4 border-sky-400/60"
+              ></div>
+              <div
+                class="w-full h-full rounded-full bg-gradient-to-tr from-sky-500 to-fuchsia-600 flex items-center justify-center text-white text-5xl font-extrabold shadow-2xl"
+              >
+                DN
+              </div>
             </div>
           </div>
-
-          <div class="max-w-3xl">
+          <div class="md:col-span-2 text-center md:text-left">
             <h3 class="text-3xl font-bold mb-4">
               Creative Technologist & Problem Solver
             </h3>
@@ -241,7 +240,7 @@
               >. I bridge the gap between user-centric design and robust
               development.
             </p>
-            <p class="text-slate-300 text-lg leading-relaxed">
+            <p class="text-slate-300 text-lg mb-2 leading-relaxed">
               I specialize in the
               <strong class="text-white"
                 >MERN stack (MongoDB, Express.js, React, Node.js)</strong
@@ -251,9 +250,9 @@
           </div>
         </div>
 
-        <!-- Skills Heading (matches section titles and spaced down) -->
+        <!-- Skills Heading (matches section titles) -->
         <h2
-          class="text-4xl md:text-5xl font-extrabold text-center neon-gradient animate-fade-in-up skills-breath mb-12 md:mb-16"
+          class="text-4xl md:text-5xl font-extrabold text-center mb-16 neon-gradient animate-fade-in-up"
         >
           Skills, certificates, and degrees I have acquired along my journey.
         </h2>
@@ -565,7 +564,7 @@
       </div>
     </section>
 
-    <!-- Footer (full-width, sticks to bottom) -->
+    <!-- Footer -->
     <footer class="bg-slate-950 text-white py-12">
       <div class="container mx-auto px-6 text-center">
         <div class="flex justify-center space-x-6 mb-6">
@@ -587,38 +586,6 @@
         </p>
       </div>
     </footer>
-
-    <!-- Minimal music control (no auto-unmute; user gesture required) -->
-    <div id="music-panel" class="hidden">
-      <button
-        id="music-toggle"
-        class="icon-btn"
-        title="Play/Pause"
-        aria-label="Play/Pause"
-      >
-        <i class="fa-solid fa-play"></i>
-      </button>
-      <span class="label">Music</span>
-      <input
-        id="music-vol"
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        value="0.07"
-        aria-label="Volume"
-      />
-      <button
-        id="music-mute"
-        class="icon-btn"
-        title="Mute/Unmute"
-        aria-label="Mute/Unmute"
-      >
-        <i class="fa-solid fa-volume-xmark"></i>
-      </button>
-      <span id="music-nudge" class="hidden">Click play to start</span>
-      <div id="yt-sound"></div>
-    </div>
 
     <script defer src="script.js"></script>
   </body>

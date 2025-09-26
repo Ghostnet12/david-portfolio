@@ -4,12 +4,11 @@
   --glow: 0 0 24px var(--neon), 0 0 64px var(--neon);
 }
 
-/* Smooth scrolling + fixed navbar offset */
+/* Smooth scrolling + navbar offset */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
 }
-
 html,
 body {
   height: 100%;
@@ -31,15 +30,13 @@ body {
   }
 }
 
-/* Keep canvas behind, regular layout for content */
+/* Layout */
 #starfield,
 nav,
 section,
 footer {
   flex: 0 0 auto;
 }
-
-/* Footer full-bleed & sticky on short pages */
 footer {
   margin-top: auto;
   width: 100%;
@@ -48,13 +45,13 @@ footer .container {
   max-width: 100% !important;
 }
 
-/* Performance: render only when needed + avoid costly containment */
+/* Performance */
 .cv-auto {
   content-visibility: auto;
   contain-intrinsic-size: 800px;
 }
 
-/* GPU compose for hoverables without permanent memory tax */
+/* GPU compose for hoverables */
 :where(.neon-card, .btn-primary, .btn-ghost, .social) {
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -155,7 +152,7 @@ footer .container {
   width: 100%;
 }
 
-/* Mobile menu (class-only transition) */
+/* Mobile menu */
 .mobile-menu {
   transition: max-height 0.3s ease;
   max-height: 0;
@@ -219,7 +216,7 @@ footer .container {
 
 /* Buttons */
 .btn-primary {
-  background: white;
+  background: #fff;
   color: #0ea5e9;
   font-weight: 600;
   padding: 0.9rem 2rem;
@@ -234,7 +231,7 @@ footer .container {
 
 .btn-ghost {
   background: rgba(255, 255, 255, 0.08);
-  color: white;
+  color: #fff;
   font-weight: 600;
   padding: 0.9rem 2rem;
   border-radius: 0.9rem;
@@ -287,7 +284,7 @@ footer .container {
   transform: translateY(0);
 }
 
-/* Neon cards — gentle, GPU-friendly */
+/* Neon cards */
 .neon-card {
   --neon: #00d4ff;
   background: rgba(2, 6, 23, 0.6);
@@ -414,7 +411,7 @@ footer .container {
   box-shadow: 0 0 18px rgba(34, 211, 238, 0.45);
 }
 
-/* --- Credit Banner: gapless, GPU-friendly ticker --- */
+/* --- Credit Banner --- */
 .credit-banner {
   background: transparent;
   padding: 0.25rem 0 1.25rem;
@@ -450,7 +447,6 @@ footer .container {
     transform: rotate(360deg);
   }
 }
-
 .ticker__inner {
   display: flex;
   gap: 0;
@@ -465,7 +461,6 @@ footer .container {
     transform: translate3d(calc(var(--ticker-w) * -1), 0, 0);
   }
 }
-
 .ticker__list {
   --gap: 2rem;
   display: flex;
@@ -492,4 +487,81 @@ footer .container {
 .dot {
   color: #64748b;
   text-shadow: none;
+}
+
+/* === Floating Music Panel (no BPM/tap now) === */
+#music-panel {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1000;
+  background: rgba(2, 6, 23, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  padding: 0.55rem 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 8px 30px -14px rgba(0, 0, 0, 0.7);
+}
+#music-panel .label {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 0 0.2rem 0 0.4rem;
+  user-select: none;
+}
+#music-panel .icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease,
+    background 0.18s ease, transform 0.12s ease;
+}
+#music-panel .icon-btn:hover {
+  transform: translateY(-1px);
+}
+#music-panel .icon-btn.active {
+  border-color: #22d3ee;
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.4);
+}
+#music-panel input[type="range"] {
+  appearance: none;
+  height: 4px;
+  width: 110px;
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+  outline: none;
+}
+#music-panel input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #22d3ee;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+}
+#yt-sound {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  left: -9999px;
+  bottom: -9999px;
+}
+
+/* Tiny nudge chip */
+#music-nudge {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+  padding: 0.25rem 0.6rem;
+  margin-left: 0.3rem;
 }

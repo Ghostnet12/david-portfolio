@@ -1,595 +1,380 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <title>
-      David Northrop - Digital Product Designer & MERN Stack Developer
-    </title>
-    <meta
-      name="description"
-      content="David Northrop - Digital Product Designer & MERN Stack Developer specializing in creating exceptional digital experiences"
-    />
+// === Config ===
+const CONTACT_EMAIL = "nortda85@gmail.com";
+const YT_VIDEO_ID = "RXr7lQxxtzM"; // YouTube music ID
+window.MUSIC_BPM = window.MUSIC_BPM || 100; // used for subtle beat effects (no audio analysis)
 
-    <!-- Performance hints -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Preload hero image to avoid LCP jank -->
-    <link
-      rel="preload"
-      as="image"
-      href="https://img.freepik.com/free-photo/html-css-collage-concept_23-2150061955.jpg?semt=ais_incoming&w=1200&q=80"
-    />
+const REDUCE_MOTION = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+).matches;
 
-    <!-- Tailwind CSS CDN (dev). For production, build Tailwind and purge. -->
-    <script src="https://cdn.tailwindcss.com" defer></script>
+/* Smooth logo scroll */
+document.getElementById("logo")?.addEventListener(
+  "click",
+  () => {
+    document
+      .getElementById("home")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  },
+  { passive: true }
+);
 
-    <!-- Google Fonts - Inter -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+/* Lazy reveal */
+const io = new IntersectionObserver(
+  (entries, obs) => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        e.target.classList.add("loaded");
+        obs.unobserve(e.target);
+      }
+    }
+  },
+  { threshold: 0.12, rootMargin: "0px 0px -50px 0px" }
+);
+document.querySelectorAll(".lazy-load").forEach((el) => io.observe(el));
 
-    <!-- Font Awesome (defer load via media swap) -->
-    <link
-      rel="preload"
-      as="style"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      media="print"
-      onload="this.media='all'"
-      crossorigin="anonymous"
-    />
+/* Contact -> open mail client */
+document.getElementById("contactForm")?.addEventListener(
+  "submit",
+  (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const message = document.getElementById("message").value.trim();
+    if (!name || !email || !message) {
+      showCustomMessageBox(
+        "Validation Error",
+        "Please fill out all required fields."
+      );
+      return;
+    }
+    const body = [
+      `Name: ${name}`,
+      `Email: ${email}`,
+      subject ? `Subject: ${subject}` : "",
+      "",
+      message,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const mailto = `mailto:${encodeURIComponent(
+      CONTACT_EMAIL
+    )}?subject=${encodeURIComponent(
+      subject || `New message from ${name}`
+    )}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
+  },
+  { passive: false }
+);
 
-    <!-- Your styles -->
-    <link rel="stylesheet" href="styles.css" />
-  </head>
+function showCustomMessageBox(title, message) {
+  const box = document.createElement("div");
+  box.className =
+    "fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-[1001] transition-opacity duration-300 opacity-0";
+  box.innerHTML = `<div class="bg-slate-900/90 border border-slate-700 p-8 rounded-2xl shadow-xl text-center max-w-sm w-full font-inter transform -translate-y-3 transition-transform duration-300">
+    <h4 class="text-2xl font-bold mb-4 text-white">${title}</h4>
+    <p class="text-slate-300 mb-6">${message}</p>
+    <button class="btn-ghost" style="border:1px solid rgba(148,163,184,.35)" aria-label="Close">OK</button>
+  </div>`;
+  document.body.appendChild(box);
+  requestAnimationFrame(() => {
+    box.classList.remove("opacity-0");
+    box.firstElementChild.classList.remove("-translate-y-3");
+  });
+  box
+    .querySelector("button")
+    .addEventListener("click", () => document.body.removeChild(box));
+}
 
-  <body class="bg-slate-950 text-slate-100 font-inter antialiased neon-bg">
-    <!-- Starfield (fixed, behind content) -->
-    <canvas id="starfield" aria-hidden="true"></canvas>
+/* Navbar shadow on scroll */
+window.addEventListener(
+  "scroll",
+  () => {
+    const navbar = document.getElementById("navbar");
+    if (window.scrollY > 50) navbar.classList.add("shadow-lg");
+    else navbar.classList.remove("shadow-lg");
+  },
+  { passive: true }
+);
 
-    <!-- Navigation -->
-    <nav
-      id="navbar"
-      class="fixed w-full top-0 z-50 bg-slate-900/70 backdrop-blur-lg border-b border-slate-800 transition-shadow duration-300 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)]"
-    >
-      <div
-        class="container mx-auto px-6 py-4 flex justify-between items-center"
-      >
-        <div id="logo" class="text-2xl font-extrabold logo cursor-pointer">
-          David Northrop
-        </div>
-        <ul class="hidden md:flex space-x-8">
-          <li>
-            <a
-              href="#home"
-              class="text-slate-100/90 hover:text-white font-medium relative nav-link-underline"
-              >Home</a
-            >
-          </li>
-          <li>
-            <a
-              href="#about"
-              class="text-slate-100/90 hover:text-white font-medium relative nav-link-underline"
-              >About</a
-            >
-          </li>
-          <li>
-            <a
-              href="#portfolio"
-              class="text-slate-100/90 hover:text-white font-medium relative nav-link-underline"
-              >Portfolio</a
-            >
-          </li>
-          <li>
-            <a
-              href="#contact"
-              class="text-slate-100/90 hover:text-white font-medium relative nav-link-underline"
-              >Contact</a
-            >
-          </li>
-        </ul>
-        <button
-          id="mobile-menu-button"
-          class="md:hidden text-slate-300 hover:text-white focus:outline-none"
-          aria-label="Toggle mobile menu"
-          aria-expanded="false"
-          aria-controls="mobile-menu"
-        >
-          <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
-        </button>
-      </div>
+/* Smooth anchor scrolling + close mobile menu */
+document.querySelectorAll('a[href^="#"]').forEach((a) => {
+  a.addEventListener("click", (e) => {
+    const target = document.querySelector(a.getAttribute("href"));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    const mobileMenu = document.getElementById("mobile-menu");
+    mobileMenu?.classList.remove("open");
+  });
+});
 
-      <!-- Mobile menu -->
-      <div
-        id="mobile-menu"
-        class="mobile-menu md:hidden bg-slate-900/95 w-full overflow-hidden"
-      >
-        <ul class="py-4 px-6 space-y-4">
-          <li>
-            <a
-              href="#home"
-              class="block py-2 text-slate-100 font-medium mobile-menu-link"
-              >Home</a
-            >
-          </li>
-          <li>
-            <a
-              href="#about"
-              class="block py-2 text-slate-100 font-medium mobile-menu-link"
-              >About</a
-            >
-          </li>
-          <li>
-            <a
-              href="#portfolio"
-              class="block py-2 text-slate-100 font-medium mobile-menu-link"
-              >Portfolio</a
-            >
-          </li>
-          <li>
-            <a
-              href="#contact"
-              class="block py-2 text-slate-100 font-medium mobile-menu-link"
-              >Contact</a
-            >
-          </li>
-        </ul>
-      </div>
-    </nav>
+/* Mobile menu */
+document.getElementById("mobile-menu-button")?.addEventListener("click", () => {
+  const mobileMenu = document.getElementById("mobile-menu");
+  const isOpen = mobileMenu.classList.toggle("open");
+  document
+    .getElementById("mobile-menu-button")
+    .setAttribute("aria-expanded", String(isOpen));
+});
 
-    <!-- Hero -->
-    <section
-      id="home"
-      class="min-h-screen hero-bg-image flex items-center pt-20 pb-12 overflow-hidden cv-auto"
-    >
-      <div
-        class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center hero-content"
-      >
-        <div class="text-white">
-          <h1
-            class="text-5xl md:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-up neon-title"
-          >
-            David Northrop
-          </h1>
-          <p class="text-2xl font-light mb-6 opacity-90 animate-fade-in-up">
-            Digital Product Designer & Full-Stack Web Developer
-          </p>
-          <p class="text-lg opacity-80 mb-8 leading-relaxed animate-fade-in-up">
-            I craft exceptional digital experiences that blend stunning design
-            with powerful functionality. Specializing in the
-            <span class="font-bold">MERN stack</span>, I transform ideas into
-            scalable apps with intuitive interfaces.
-          </p>
-          <div class="flex flex-wrap gap-4 animate-fade-in-up">
-            <a href="#portfolio" class="btn-primary flex items-center gap-2"
-              ><i class="fas fa-eye"></i> View My Work</a
-            >
-            <a href="#contact" class="btn-ghost flex items-center gap-2"
-              ><i class="fas fa-handshake"></i> Let's Collaborate</a
-            >
-          </div>
-        </div>
-      </div>
-    </section>
+/* ---- Endless Credit Ticker (no seam) ---- */
+(function setupTicker() {
+  const inner = document.querySelector(".ticker__inner");
+  const firstList = document.querySelector(".ticker__list");
+  if (!inner || !firstList) return;
 
-    <!-- Credit Ticker (under hero) -->
-    <section id="credit" class="credit-banner cv-auto">
-      <div class="container mx-auto px-6">
-        <div class="ticker lazy-load" aria-label="Site credit">
-          <div class="ticker__inner" style="--speed: 18s">
-            <ul class="ticker__list">
-              <li class="ticker__item">
-                Made by <strong>Instant Canvas.io</strong>
-              </li>
-              <li class="dot">•</li>
-              <li class="ticker__item">Develop</li>
-              <li class="dot">•</li>
-              <li class="ticker__item">Espresso</li>
-              <li class="dot">•</li>
-              <li class="ticker__item">Code</li>
-              <li class="dot">•</li>
-              <li class="ticker__item">Repeat</li>
-              <li class="dot">•</li>
-            </ul>
-            <!-- JS clones enough lists for a seamless loop with even segment gaps -->
-          </div>
-        </div>
-      </div>
-    </section>
+  // Ensure a leading and trailing gap symmetry
+  const ensureDotSpacing = () => {
+    const items = firstList.querySelectorAll("li");
+    if (items[0] && !items[0].classList.contains("dot")) {
+      const dot = document.createElement("li");
+      dot.className = "dot";
+      dot.textContent = "•";
+      firstList.insertBefore(dot, items[0]);
+    }
+  };
+  ensureDotSpacing();
 
-    <!-- About -->
-    <section id="about" class="py-20 md:py-32 bg-transparent cv-auto">
-      <div class="container mx-auto px-6 lazy-load">
-        <h2
-          class="text-4xl md:text-5xl font-extrabold text-center mb-16 neon-gradient"
-        >
-          About Me
-        </h2>
+  const rebuild = () => {
+    // Clear clones
+    inner.querySelectorAll(".ticker__list.clone").forEach((n) => n.remove());
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 items-start mb-12">
-          <div class="flex justify-center md:col-span-1">
-            <div class="relative w-64 h-64">
-              <div
-                class="profile-ring absolute -inset-3 rounded-full border-4 border-sky-400/60"
-              ></div>
-              <div
-                class="w-full h-full rounded-full bg-gradient-to-tr from-sky-500 to-fuchsia-600 flex items-center justify-center text-white text-5xl font-extrabold shadow-2xl"
-              >
-                DN
-              </div>
-            </div>
-          </div>
-          <div class="md:col-span-2 text-center md:text-left">
-            <h3 class="text-3xl font-bold mb-4">
-              Creative Technologist & Problem Solver
-            </h3>
-            <p class="text-slate-300 text-lg mb-6 leading-relaxed">
-              Hello! I'm David Northrop, a passionate
-              <strong class="text-white"
-                >Digital Product Designer and Full-Stack Web Developer</strong
-              >. I bridge the gap between user-centric design and robust
-              development.
-            </p>
-            <p class="text-slate-300 text-lg mb-2 leading-relaxed">
-              I specialize in the
-              <strong class="text-white"
-                >MERN stack (MongoDB, Express.js, React, Node.js)</strong
-              >, building scalable, component-based web applications across
-              devices.
-            </p>
-          </div>
-        </div>
+    const listWidth = firstList.getBoundingClientRect().width;
+    const viewportWidth = inner.parentElement.getBoundingClientRect().width;
+    // We want at least 2x viewport width so the keyframe distance = listWidth
+    let needWidth = viewportWidth * 2 + listWidth;
+    let acc = listWidth;
+    while (acc < needWidth) {
+      const clone = firstList.cloneNode(true);
+      clone.classList.add("clone");
+      inner.appendChild(clone);
+      acc += listWidth;
+    }
+    inner.style.setProperty("--ticker-w", `${listWidth}px`);
+  };
 
-        <!-- ✨ BRIDGE LINE: requested phrase -->
-        <div class="section-bridge lazy-load" aria-label="skills intro">
-          <span class="line" aria-hidden="true"></span>
-          <span class="label"
-            >Skills, certificates, and degrees I have acquired along my
-            journey.</span
-          >
-          <span class="line" aria-hidden="true"></span>
-        </div>
+  const ro = new ResizeObserver(() => rebuild());
+  ro.observe(inner.parentElement);
+  rebuild();
+})();
 
-        <!-- Skills -->
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 cv-auto"
-        >
-          <div class="neon-card neon-sky p-8 rounded-2xl text-center lazy-load">
-            <div class="text-4xl mb-4 text-sky-400">
-              <i class="fab fa-figma"></i>
-            </div>
-            <h4 class="text-xl font-semibold mb-1">UI/UX Design</h4>
-            <p class="text-slate-400">Expert Level</p>
-          </div>
+/* ---- Starfield (with subtle beat flares) ---- */
+(function starfield() {
+  const canvas = document.getElementById("starfield");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let w,
+    h,
+    stars = [];
+  const palette = [
+    "#22d3ee",
+    "#a78bfa",
+    "#f472b6",
+    "#14b8a6",
+    "#60a5fa",
+    "#22c55e",
+  ];
+  const STAR_COUNT = 160;
 
-          <div
-            class="neon-card neon-fuchsia p-8 rounded-2xl text-center lazy-load"
-          >
-            <div class="text-4xl mb-4 text-fuchsia-400">
-              <i class="fas fa-graduation-cap"></i>
-            </div>
-            <h4 class="text-xl font-semibold mb-1">
-              Bachelor's in Graphic Design
-            </h4>
-            <p class="text-slate-400">Magna cum laude</p>
-          </div>
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = canvas.width = Math.floor(window.innerWidth * dpr);
+    h = canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+    if (stars.length === 0) init();
+  }
 
-          <div
-            class="neon-card neon-pink p-8 rounded-2xl text-center lazy-load"
-          >
-            <div class="text-4xl mb-4 text-pink-400">
-              <i class="fas fa-palette"></i>
-            </div>
-            <h4 class="text-xl font-semibold mb-1">Branding & Identity</h4>
-            <p class="text-slate-400">Advanced Level</p>
-          </div>
+  function init() {
+    stars = Array.from({ length: STAR_COUNT }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: (Math.random() * 1.2 + 0.2) * dpr,
+      a: Math.random(),
+      hue: palette[(Math.random() * palette.length) | 0],
+      tw: Math.random() * Math.PI * 2,
+    }));
+  }
 
-          <div
-            class="neon-card neon-purple p-8 rounded-2xl text-center lazy-load"
-          >
-            <div class="text-4xl mb-4 text-purple-400">
-              <i class="fab fa-adobe"></i>
-            </div>
-            <h4 class="text-xl font-semibold mb-1">Adobe Creative Suite</h4>
-            <p class="text-slate-400">Expert Level</p>
-          </div>
+  function render(t) {
+    ctx.clearRect(0, 0, w, h);
+    for (const s of stars) {
+      s.tw += 0.015 + Math.random() * 0.003;
+      const twinkle = (Math.sin(s.tw) + 1) / 2; // 0..1
+      const alpha = 0.25 + twinkle * 0.55; // softer range
+      ctx.beginPath();
+      ctx.fillStyle = hexToRgba(s.hue, alpha);
+      ctx.arc(s.x, s.y, s.r * (0.8 + twinkle * 0.3), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(render);
+  }
 
-          <div class="neon-card neon-sky p-8 rounded-2xl text-center lazy-load">
-            <div class="text-4xl mb-4 text-sky-400">
-              <i class="fab fa-react"></i>
-            </div>
-            <h4 class="text-xl font-semibold mb-1">React & Next.js</h4>
-            <p class="text-slate-400">Expert Level</p>
-          </div>
+  function hexToRgba(hex, a) {
+    const v = hex.replace("#", "");
+    const r = parseInt(v.substring(0, 2), 16);
+    const g = parseInt(v.substring(2, 4), 16);
+    const b = parseInt(v.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
 
-          <div
-            class="neon-card neon-amber p-8 rounded-2xl text-center lazy-load"
-          >
-            <div class="text-4xl mb-4 text-orange-400">
-              <i class="fab fa-html5"></i>
-            </div>
-            <h4 class="text-xl font-semibold mb-1">HTML5 & CSS3</h4>
-            <p class="text-slate-400">Expert Level</p>
-          </div>
+  // "Beat" flares - subtle; triggered by our beat scheduler below
+  function flareStars() {
+    const n = 8 + ((Math.random() * 6) | 0);
+    for (let i = 0; i < n; i++) {
+      const s = stars[(Math.random() * stars.length) | 0];
+      s.tw += Math.PI / 2; // quick brighten
+      s.hue = palette[(Math.random() * palette.length) | 0];
+    }
+  }
 
-          <div
-            class="neon-card neon-yellow p-8 rounded-2xl text-center lazy-load"
-          >
-            <div class="text-4xl mb-4 text-yellow-300">
-              <i class="fab fa-js-square"></i>
-            </div>
-            <h4 class="text-xl font-semibold mb-1">JavaScript (ES6+)</h4>
-            <p class="text-slate-400">Expert Level</p>
-          </div>
+  window.__starfieldFlare = flareStars; // expose to beat scheduler
+  window.addEventListener("resize", resize, { passive: true });
+  resize();
+  init();
+  requestAnimationFrame(render);
+})();
 
-          <div class="neon-card neon-sky p-8 rounded-2xl text-center lazy-load">
-            <div class="text-4xl mb-4 text-sky-300">
-              <i class="fas fa-graduation-cap"></i>
-            </div>
-            <h4 class="text-xl font-semibold mb-1">TripleTen Certificate</h4>
-            <p class="text-slate-400">Full-Stack Web Developer</p>
-          </div>
+/* ---- Beat Scheduler (BPM-based; does NOT analyze audio) ---- */
+(function beatScheduler() {
+  if (REDUCE_MOTION) return;
+  const bpm = window.MUSIC_BPM || 100;
+  const interval = 60_000 / bpm; // ms per beat
+  let last = performance.now();
 
-          <div
-            class="neon-card neon-green p-8 rounded-2xl text-center lazy-load"
-          >
-            <div class="text-4xl mb-4 text-green-400">
-              <i class="fab fa-node-js"></i>
-            </div>
-            <h4 class="text-xl font-semibold mb-1">Node.js & Express</h4>
-            <p class="text-slate-400">Expert Level</p>
-          </div>
+  const aboutCards = Array.from(document.querySelectorAll("#about .neon-card"));
 
-          <div
-            class="neon-card neon-blue p-8 rounded-2xl text-center lazy-load"
-          >
-            <div class="text-4xl mb-4 text-blue-300">
-              <i class="fas fa-database"></i>
-            </div>
-            <h4 class="text-2xl font-bold mb-1">MongoDB</h4>
-            <p class="text-slate-400">Advanced Level</p>
-          </div>
+  function tick(now) {
+    if (now - last >= interval) {
+      last = now;
 
-          <div
-            class="neon-card neon-slate p-8 rounded-2xl text-center lazy-load"
-          >
-            <div class="text-4xl mb-4 text-slate-300">
-              <i class="fab fa-git-alt"></i>
-            </div>
-            <h4 class="text-xl font-semibold mb-1">Git & GitHub</h4>
-            <p class="text-slate-400">Advanced Level</p>
-          </div>
-        </div>
-      </div>
-    </section>
+      // Starfield subtle flare
+      if (typeof window.__starfieldFlare === "function")
+        window.__starfieldFlare();
 
-    <!-- Portfolio -->
-    <section id="portfolio" class="py-20 md:py-32 bg-transparent cv-auto">
-      <div class="container mx-auto px-6 lazy-load">
-        <h2
-          class="text-4xl md:text-5xl font-extrabold text-center mb-16 neon-gradient-2"
-        >
-          Featured Projects
-        </h2>
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div
-            class="neon-card neon-pink overflow-hidden rounded-2xl transition-transform duration-300 lazy-load"
-          >
-            <div
-              class="h-64 card-top flex items-center justify-center text-white text-5xl"
-            >
-              <i class="fas fa-shopping-cart"></i>
-            </div>
-            <div class="p-8">
-              <h3 class="text-2xl font-bold mb-2">E-Commerce Platform</h3>
-              <p class="text-slate-300 mb-4">
-                Full-featured MERN stack shopping platform with auth, payments
-                and realtime inventory.
-              </p>
-              <div class="flex flex-wrap gap-2 text-sm">
-                <span class="pill">React</span><span class="pill">Node.js</span
-                ><span class="pill">MongoDB</span
-                ><span class="pill">Stripe</span>
-              </div>
-            </div>
-          </div>
+      // One random About card gets a brief glow
+      if (aboutCards.length) {
+        const idx = (Math.random() * aboutCards.length) | 0;
+        const card = aboutCards[idx];
+        card.classList.add("card-beat");
+        setTimeout(() => card.classList.remove("card-beat"), 170);
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
 
-          <div
-            class="neon-card neon-indigo overflow-hidden rounded-2xl transition-transform duration-300 lazy-load"
-          >
-            <div
-              class="h-64 card-top flex items-center justify-center text-white text-5xl"
-            >
-              <i class="fas fa-tasks"></i>
-            </div>
-            <div class="p-8">
-              <h3 class="text-2xl font-bold mb-2">Project Management Tool</h3>
-              <p class="text-slate-300 mb-4">
-                Realtime collaboration, drag-and-drop and team workflows.
-              </p>
-              <div class="flex flex-wrap gap-2 text-sm">
-                <span class="pill">React</span
-                ><span class="pill">Socket.io</span
-                ><span class="pill">Express</span><span class="pill">MUI</span>
-              </div>
-            </div>
-          </div>
+/* ---- Lightweight Music UI (YouTube embed on demand) ---- */
+(function musicUI() {
+  const panel = document.getElementById("music-panel");
+  const btn = document.getElementById("music-toggle");
+  const muteBtn = document.getElementById("music-mute");
+  const vol = document.getElementById("music-vol");
+  const nudge = document.getElementById("music-nudge");
+  if (!panel || !btn || !muteBtn || !vol) return;
 
-          <div
-            class="neon-card neon-teal overflow-hidden rounded-2xl transition-transform duration-300 lazy-load"
-          >
-            <div
-              class="h-64 card-top flex items-center justify-center text-white text-5xl"
-            >
-              <i class="fas fa-chart-line"></i>
-            </div>
-            <div class="p-8">
-              <h3 class="text-2xl font-bold mb-2">Analytics Dashboard</h3>
-              <p class="text-slate-300 mb-4">
-                Interactive charts, real-time metrics, clean data UX.
-              </p>
-              <div class="flex flex-wrap gap-2 text-sm">
-                <span class="pill">React</span><span class="pill">D3.js</span
-                ><span class="pill">Chart.js</span
-                ><span class="pill">Node.js</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  panel.classList.remove("hidden"); // show panel
 
-    <!-- Contact -->
-    <section id="contact" class="py-20 md:py-32 bg-transparent cv-auto">
-      <div class="container mx-auto px-6 lazy-load">
-        <h2
-          class="text-4xl md:text-5xl font-extrabold text-center mb-16 neon-gradient"
-        >
-          Let's Work Together
-        </h2>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          <div class="space-y-6">
-            <div
-              class="neon-card neon-indigo p-6 rounded-xl flex items-center gap-4"
-            >
-              <div
-                class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-sky-500 to-fuchsia-600 text-white rounded-full text-xl shrink-0"
-              >
-                <i class="fas fa-envelope"></i>
-              </div>
-              <div>
-                <strong class="block text-white font-semibold">Email</strong
-                ><span class="text-slate-300">nortda85@gmail.com</span>
-              </div>
-            </div>
-            <div
-              class="neon-card neon-teal p-6 rounded-xl flex items-center gap-4"
-            >
-              <div
-                class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-teal-500 to-sky-600 text-white rounded-full text-xl shrink-0"
-              >
-                <i class="fas fa-map-marker-alt"></i>
-              </div>
-              <div>
-                <strong class="block text-white font-semibold">Location</strong
-                ><span class="text-slate-300">United States</span>
-              </div>
-            </div>
-            <div
-              class="neon-card neon-pink p-6 rounded-xl flex items-center gap-4"
-            >
-              <div
-                class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-pink-500 to-fuchsia-600 text-white rounded-full text-xl shrink-0"
-              >
-                <i class="fas fa-clock"></i>
-              </div>
-              <div>
-                <strong class="block text-white font-semibold"
-                  >Response Time</strong
-                ><span class="text-slate-300">Within 24 hours</span>
-              </div>
-            </div>
-          </div>
+  let player = null;
+  let isMuted = true;
+  let isPlaying = false;
 
-          <div class="neon-card neon-blue p-8 rounded-2xl">
-            <form id="contactForm" class="space-y-6">
-              <div>
-                <label
-                  for="name"
-                  class="block text-sm font-semibold text-slate-200 mb-2"
-                  >Your Name</label
-                >
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  class="input-dark"
-                />
-              </div>
-              <div>
-                <label
-                  for="email"
-                  class="block text-sm font-semibold text-slate-200 mb-2"
-                  >Your Email</label
-                >
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  class="input-dark"
-                />
-              </div>
-              <div>
-                <label
-                  for="subject"
-                  class="block text-sm font-semibold text-slate-200 mb-2"
-                  >Subject</label
-                >
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  required
-                  class="input-dark"
-                />
-              </div>
-              <div>
-                <label
-                  for="message"
-                  class="block text-sm font-semibold text-slate-200 mb-2"
-                  >Message</label
-                >
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  class="textarea-dark h-32"
-                ></textarea>
-              </div>
-              <button type="submit" class="btn-primary w-full">
-                <i class="fas fa-paper-plane"></i> Send Message
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
+  function loadYT(onReady) {
+    if (window.YT && window.YT.Player) {
+      onReady();
+      return;
+    }
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    window.onYouTubeIframeAPIReady = onReady;
+    document.body.appendChild(tag);
+  }
 
-    <!-- Footer -->
-    <footer class="bg-slate-950 text-white py-12">
-      <div class="container mx-auto px-6 text-center">
-        <div class="flex justify-center space-x-6 mb-6">
-          <a href="#" class="social" aria-label="LinkedIn"
-            ><i class="fab fa-linkedin-in"></i
-          ></a>
-          <a href="#" class="social" aria-label="GitHub"
-            ><i class="fab fa-github"></i
-          ></a>
-          <a href="#" class="social" aria-label="Dribbble"
-            ><i class="fab fa-dribbble"></i
-          ></a>
-          <a href="#" class="social" aria-label="Twitter"
-            ><i class="fab fa-twitter"></i
-          ></a>
-        </div>
-        <p class="text-slate-400 text-sm">
-          &copy; 2025 David Northrop | Instant Canvas. All rights reserved.
-        </p>
-      </div>
-    </footer>
+  function ensurePlayer(cb) {
+    if (player) return cb();
+    loadYT(() => {
+      player = new YT.Player("yt-sound", {
+        height: "0",
+        width: "0",
+        videoId: YT_VIDEO_ID,
+        playerVars: { autoplay: 0, controls: 0, disablekb: 1, playsinline: 1 },
+        events: {
+          onReady: (e) => {
+            player.setVolume(Math.round(parseFloat(vol.value) * 100));
+            player.mute(); // start muted to satisfy autoplay rules
+            isMuted = true;
+            if (cb) cb();
+          },
+          onStateChange: (e) => {
+            if (e.data === YT.PlayerState.PLAYING) {
+              isPlaying = true;
+              btn.classList.add("active");
+              btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+              nudge.classList.add("hidden");
+            }
+            if (
+              e.data === YT.PlayerState.PAUSED ||
+              e.data === YT.PlayerState.ENDED
+            ) {
+              isPlaying = false;
+              btn.classList.remove("active");
+              btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            }
+          },
+        },
+      });
+    });
+  }
 
-    <script defer src="script.js"></script>
-  </body>
-</html>
+  btn.addEventListener("click", () => {
+    ensurePlayer(() => {
+      if (!isPlaying) {
+        // First user gesture -> unmute respecting volume slider
+        if (isMuted) {
+          player.unMute();
+          isMuted = false;
+          muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+        }
+        player.playVideo();
+      } else {
+        player.pauseVideo();
+      }
+    });
+  });
+
+  muteBtn.addEventListener("click", () => {
+    if (!player) return;
+    if (isMuted) {
+      player.unMute();
+      isMuted = false;
+      muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+    } else {
+      player.mute();
+      isMuted = true;
+      muteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+    }
+  });
+
+  vol.addEventListener("input", () => {
+    if (!player) return;
+    player.setVolume(Math.round(parseFloat(vol.value) * 100));
+  });
+
+  // Inform the user they need to click once
+  setTimeout(() => nudge.classList.remove("hidden"), 600);
+})();
+
+/* Utility: throttle */
+function throttle(fn, wait = 100) {
+  let t = 0;
+  return (...args) => {
+    const now = Date.now();
+    if (now - t > wait) {
+      t = now;
+      fn(...args);
+    }
+  };
+}

@@ -4,31 +4,23 @@
   --glow:0 0 24px var(--neon),0 0 64px var(--neon);
 }
 
-/* Smooth scrolling + navbar offset */
 html{ scroll-behavior:smooth; scroll-padding-top: 80px; }
 html, body { height: 100%; }
 body { min-height: 100svh; display: flex; flex-direction: column; }
 
-/* Respect user prefs */
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
 }
 
-/* Layout */
 #starfield, nav, section, footer { flex: 0 0 auto; }
 footer { margin-top: auto; width: 100%; }
 footer .container { max-width: 100% !important; }
 
-/* Performance */
 .cv-auto{ content-visibility:auto; contain-intrinsic-size:800px; }
 
-/* GPU compose for hoverables */
 :where(.neon-card,.btn-primary,.btn-ghost,.social){ transform: translateZ(0); backface-visibility:hidden; }
-
-/* Font */
 .font-inter{ font-family:"Inter",sans-serif; }
 
-/* Dark neon background */
 .neon-bg{
   background:
     radial-gradient(1200px 600px at 80% -10%, rgba(0,212,255,0.10), transparent 40%),
@@ -46,16 +38,13 @@ footer .container { max-width: 100% !important; }
 .neon-bg::after{ background:radial-gradient(circle,#a78bfa,transparent 60%); bottom:-12vmax; right:-8vmax; animation-delay:-8s; }
 @keyframes float{ 0%,100%{transform:translate(0) rotate(0)} 50%{transform:translate(3vmax,-2vmax) rotate(8deg)} }
 
-/* Star canvas */
 #starfield{ position:fixed; inset:0; z-index:0; pointer-events:none; }
 
-/* Logo gradient */
 .logo{
   background-image:linear-gradient(135deg,#60a5fa 0%,#a78bfa 50%,#22d3ee 100%);
   -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
 }
 
-/* Underline hover */
 .nav-link-underline{ position:relative; }
 .nav-link-underline::after{
   content:""; position:absolute; bottom:-6px; left:0; width:0; height:2px;
@@ -65,13 +54,11 @@ footer .container { max-width: 100% !important; }
 }
 .nav-link-underline:hover::after{ width:100%; }
 
-/* Mobile menu */
 .mobile-menu{ transition:max-height .3s ease; max-height:0; }
 .mobile-menu.open{ max-height:70vh; }
 .mobile-menu-link{ transition:transform .3s ease,opacity .3s ease; transform:translateX(-12px); opacity:0; }
 .mobile-menu.open .mobile-menu-link{ transform:translateX(0); opacity:1; }
 
-/* Hero bg */
 .hero-bg-image{
   background-image:url("https://img.freepik.com/free-photo/html-css-collage-concept_23-2150061955.jpg?semt=ais_incoming&w=1200&q=80");
   background-size:cover; background-position:center; position:relative; z-index:1; contain:paint;
@@ -79,7 +66,6 @@ footer .container { max-width: 100% !important; }
 .hero-bg-image::before{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(2,6,23,.85), rgba(2,6,23,.75)); z-index:2; }
 .hero-content{ position:relative; z-index:3; }
 
-/* Titles */
 .neon-title{ text-shadow:0 0 18px rgba(34,211,238,.45); }
 .neon-gradient{
   background:linear-gradient(90deg,#22d3ee,#a78bfa);
@@ -92,7 +78,6 @@ footer .container { max-width: 100% !important; }
   filter:drop-shadow(0 0 16px rgba(244,114,182,.2));
 }
 
-/* Buttons */
 .btn-primary{
   background:#fff; color:#0ea5e9; font-weight:600; padding:.9rem 2rem; border-radius:.9rem;
   box-shadow:0 12px 30px -12px rgba(34,211,238,.6);
@@ -108,21 +93,17 @@ footer .container { max-width: 100% !important; }
 }
 .btn-ghost:hover{ transform:translateY(-2px); background:rgba(255,255,255,.12); box-shadow:0 10px 30px -10px rgba(0,212,255,.4); }
 
-/* Inputs */
 .input-dark,.textarea-dark{
   width:100%; padding:.9rem 1rem; border-radius:.8rem; border:1px solid rgba(148,163,184,.25);
   background:#0f172a; color:#e2e8f0; outline:none; transition:border-color .18s ease, box-shadow .18s ease;
 }
 .input-dark:focus,.textarea-dark:focus{ border-color:#22d3ee; box-shadow:0 0 0 4px rgba(34,211,238,.15); }
 
-/* Pills */
 .pill{ background:rgba(148,163,184,.12); color:#7dd3fc; font-weight:600; padding:.25rem .7rem; border-radius:9999px; border:1px solid rgba(148,163,184,.2); }
 
-/* Lazy reveal */
 .lazy-load{ opacity:0; transform:translateY(18px); transition:opacity .5s ease, transform .5s ease; }
 .lazy-load.loaded{ opacity:1; transform:translateY(0); }
 
-/* Neon cards */
 .neon-card{
   --neon:#00d4ff;
   background:rgba(2,6,23,.6);
@@ -144,7 +125,6 @@ footer .container { max-width: 100% !important; }
 }
 @keyframes neonPulse{ 0%,100%{opacity:.24} 50%{opacity:.52} }
 
-/* Variants */
 .neon-blue{ --neon:#60a5fa; }
 .neon-sky{ --neon:#22d3ee; }
 .neon-indigo{ --neon:#818cf8; }
@@ -156,18 +136,14 @@ footer .container { max-width: 100% !important; }
 .neon-green{ --neon:#22c55e; }
 .neon-slate{ --neon:#94a3b8; }
 
-/* Project card header uses neon tone */
 .card-top{ background:linear-gradient(135deg, color-mix(in oklab,var(--neon),#000 10%) 0%, #0b1324 100%); }
 
-/* Avatar ring */
 .profile-ring{ animation:rotate 20s linear infinite; }
 @keyframes rotate{ from{transform:rotate(0)} to{transform:rotate(360deg)} }
 
-/* Simple in-view fade-up */
 .animate-fade-in-up{ opacity:0; transform:translateY(10px); animation:fadeInUp .5s ease forwards; }
 @keyframes fadeInUp{ to{ opacity:1; transform:translateY(0);} }
 
-/* Social */
 .social{
   width:3rem; height:3rem; display:inline-flex; align-items:center; justify-content:center;
   background:rgba(2,6,23,.6); border:1px solid rgba(148,163,184,.18); border-radius:9999px;
@@ -196,7 +172,7 @@ footer .container { max-width: 100% !important; }
 .ticker__item strong{ color:#7dd3fc; text-shadow:0 0 18px rgba(125,211,252,.55); white-space:nowrap; }
 .dot{ color:#64748b; text-shadow:none; }
 
-/* === Floating Music Panel (no BPM/tap UI) === */
+/* Music panel */
 #music-panel{
   position:fixed; right:1rem; bottom:1rem; z-index:1000;
   background:rgba(2,6,23,.7); border:1px solid rgba(148,163,184,.22);
@@ -219,14 +195,12 @@ footer .container { max-width: 100% !important; }
   appearance:none; width:16px; height:16px; border-radius:50%; background:#22d3ee; box-shadow:0 0 10px rgba(34,211,238,.6);
 }
 #yt-sound{ position:fixed; width:1px; height:1px; left:-9999px; bottom:-9999px; }
-
-/* Tiny nudge chip */
 #music-nudge{
   font-size:.78rem; color:#cbd5e1; background:rgba(15,23,42,.85);
   border:1px solid rgba(148,163,184,.25); border-radius:9999px; padding:.25rem .6rem; margin-left:.3rem;
 }
 
-/* ===== Mobile Landscape / Short Viewports ===== */
+/* Mobile Landscape / Short Viewports */
 @media (max-height: 480px) and (max-width: 900px) {
   #home .neon-title{
     font-size: clamp(1.6rem, 4.5vw, 2.2rem) !important;
@@ -246,22 +220,18 @@ footer .container { max-width: 100% !important; }
   .mobile-menu{ max-height: calc(100svh - 56px); overflow-y:auto; }
 }
 
-/* Prefer modern viewport units so hero fills even with browser UI visible */
 #home{ min-height: 100vh; }
 @supports (height: 100svh){
   #home{ min-height: 100svh; }
 }
-
-/* Make footer truly edge-to-edge on tiny heights too */
 footer{ width:100%; }
 footer .container{ max-width:100%!important; }
 
-/* Slightly lower neon hover lift on very short viewports */
 @media (max-height: 480px){
   .neon-card:hover{ transform: translateY(-2px); }
 }
 
-/* Subtle beat highlight for About cards (random, one-at-a-time) */
+/* Beat highlight for About cards (random, one-at-a-time) */
 #about .neon-card.card-beat{
   box-shadow:
     0 0 36px -12px color-mix(in oklab,var(--neon),#000 0%),
@@ -270,3 +240,24 @@ footer .container{ max-width:100%!important; }
   border-color: color-mix(in oklab,var(--neon),white 22%);
 }
 #about .neon-card.card-beat::before{ opacity:.58; }
+
+/* --- Section Bridge (the requested phrase line) --- */
+.section-bridge{
+  display:flex; align-items:center; gap:1rem; margin: 0 0 1.5rem 0;
+}
+.section-bridge .line{
+  height:1px; flex:1;
+  background:linear-gradient(90deg, transparent, rgba(125,211,252,.5), transparent);
+  filter:drop-shadow(0 0 8px rgba(34,211,238,.35));
+}
+.section-bridge .label{
+  white-space:nowrap; font-weight:700; letter-spacing:.2px; text-align:center;
+  background:linear-gradient(90deg,#22d3ee,#a78bfa);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  text-shadow:0 0 14px rgba(34,211,238,.35);
+  padding: .25rem .6rem; border-radius:.5rem;
+}
+@media (max-width:480px){
+  .section-bridge{ gap:.6rem; }
+  .section-bridge .label{ font-size:.95rem; }
+}

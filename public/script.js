@@ -1,354 +1,380 @@
 // === Config ===
 const CONTACT_EMAIL = "nortda85@gmail.com";
 const YT_VIDEO_ID = "RXr7lQxxtzM"; // YouTube music ID
-window.MUSIC_BPM = window.MUSIC_BPM || 100;
+window.MUSIC_BPM = window.MUSIC_BPM || 100; // used for subtle beat effects (no audio analysis)
 
-const REDUCE_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const REDUCE_MOTION = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+).matches;
 
 /* Smooth logo scroll */
-document.getElementById("logo")?.addEventListener("click", () => {
-  document.getElementById("home")?.scrollIntoView({ behavior: "smooth", block: "start" });
-}, { passive: true });
+document.getElementById("logo")?.addEventListener(
+  "click",
+  () => {
+    document
+      .getElementById("home")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  },
+  { passive: true }
+);
 
 /* Lazy reveal */
-const io = new IntersectionObserver((entries, obs) => {
-  for (const e of entries){ if (e.isIntersecting){ e.target.classList.add("loaded"); obs.unobserve(e.target); } }
-},{ threshold:.12, rootMargin:"0px 0px -50px 0px" });
-document.querySelectorAll(".lazy-load").forEach((el)=>io.observe(el));
+const io = new IntersectionObserver(
+  (entries, obs) => {
+    for (const e of entries) {
+      if (e.isIntersecting) {
+        e.target.classList.add("loaded");
+        obs.unobserve(e.target);
+      }
+    }
+  },
+  { threshold: 0.12, rootMargin: "0px 0px -50px 0px" }
+);
+document.querySelectorAll(".lazy-load").forEach((el) => io.observe(el));
 
 /* Contact -> open mail client */
-document.getElementById("contactForm")?.addEventListener("submit",(e)=>{
-  e.preventDefault();
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const subject = document.getElementById("subject").value.trim();
-  const message = document.getElementById("message").value.trim();
-  if(!name || !email || !message){ showCustomMessageBox("Validation Error","Please fill out all required fields."); return; }
-  const body = [`Name: ${name}`,`Email: ${email}`,subject?`Subject: ${subject}`:"","",message].filter(Boolean).join("\n");
-  const mailto = `mailto:${encodeURIComponent(CONTACT_EMAIL)}?subject=${encodeURIComponent(subject||`New message from ${name}`)}&body=${encodeURIComponent(body)}`;
-  window.location.href = mailto;
-},{ passive:false });
+document.getElementById("contactForm")?.addEventListener(
+  "submit",
+  (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const subject = document.getElementById("subject").value.trim();
+    const message = document.getElementById("message").value.trim();
+    if (!name || !email || !message) {
+      showCustomMessageBox(
+        "Validation Error",
+        "Please fill out all required fields."
+      );
+      return;
+    }
+    const body = [
+      `Name: ${name}`,
+      `Email: ${email}`,
+      subject ? `Subject: ${subject}` : "",
+      "",
+      message,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    const mailto = `mailto:${encodeURIComponent(
+      CONTACT_EMAIL
+    )}?subject=${encodeURIComponent(
+      subject || `New message from ${name}`
+    )}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
+  },
+  { passive: false }
+);
 
-function showCustomMessageBox(title,message){
+function showCustomMessageBox(title, message) {
   const box = document.createElement("div");
-  box.className="fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-[1001] transition-opacity duration-300 opacity-0";
-  box.innerHTML=`<div class="bg-slate-900/90 border border-slate-700 p-8 rounded-2xl shadow-xl text-center max-w-sm w-full font-inter transform -translate-y-3 transition-transform duration-300">
+  box.className =
+    "fixed inset-0 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center z-[1001] transition-opacity duration-300 opacity-0";
+  box.innerHTML = `<div class="bg-slate-900/90 border border-slate-700 p-8 rounded-2xl shadow-xl text-center max-w-sm w-full font-inter transform -translate-y-3 transition-transform duration-300">
     <h4 class="text-2xl font-bold mb-4 text-white">${title}</h4>
     <p class="text-slate-300 mb-6">${message}</p>
-    <button class="bg-white text-sky-600 px-6 py-3 rounded-lg hover:shadow-lg">OK</button>
+    <button class="btn-ghost" style="border:1px solid rgba(148,163,184,.35)" aria-label="Close">OK</button>
   </div>`;
   document.body.appendChild(box);
-  const close=()=>document.body.removeChild(box);
-  box.querySelector("button").addEventListener("click",close,{ passive:true });
-  requestAnimationFrame(()=>{ box.classList.remove("opacity-0"); box.querySelector("div").classList.remove("-translate-y-3"); });
-}
-
-/* Navbar shadow */
-window.addEventListener("scroll",()=>{
-  const navbar=document.getElementById("navbar");
-  if(!navbar) return;
-  (window.scrollY>50)?navbar.classList.add("shadow-lg"):navbar.classList.remove("shadow-lg");
-},{ passive:true });
-
-/* In-page anchors & mobile menu */
-document.querySelectorAll('a[href^="#"]').forEach((a)=>
-  a.addEventListener("click",(e)=>{
-    const target=document.querySelector(a.getAttribute("href")); if(!target) return;
-    e.preventDefault(); target.scrollIntoView({ behavior:"smooth", block:"start" });
-    const menu=document.getElementById("mobile-menu"); const btn=document.getElementById("mobile-menu-button");
-    if(menu?.classList.contains("open")){ menu.classList.remove("open"); btn?.setAttribute("aria-expanded","false"); }
-  },{ passive:true })
-);
-document.getElementById("mobile-menu-button")?.addEventListener("click",()=>{
-  const menu=document.getElementById("mobile-menu"); if(!menu) return;
-  const isOpen=menu.classList.toggle("open");
-  document.getElementById("mobile-menu-button")?.setAttribute("aria-expanded",String(isOpen));
-},{ passive:true });
-
-/* Tiny hover tilt (softer in short landscape) */
-if(!REDUCE_MOTION){
-  const tiltForViewport = () =>
-    (window.innerHeight < 500 && window.innerWidth < 900) ? 2 : 4; // deg
-  let tiltMax = tiltForViewport();
-  window.addEventListener('resize', () => { tiltMax = tiltForViewport(); }, { passive:true });
-
-  document.querySelectorAll(".neon-card").forEach((card)=>{
-    let rafId=null;
-    const onMove=(e)=>{
-      const r=card.getBoundingClientRect();
-      const x=(e.clientX-r.left)/r.width-0.5, y=(e.clientY-r.top)/r.height-0.5;
-      if(rafId) cancelAnimationFrame(rafId);
-      rafId=requestAnimationFrame(()=>{
-        card.style.transform=`translateY(-4px) rotateX(${(-y*tiltMax).toFixed(2)}deg) rotateY(${(x*tiltMax).toFixed(2)}deg)`;
-      });
-    };
-    const onLeave=()=>{ if(rafId) cancelAnimationFrame(rafId); card.style.transform=""; };
-    card.addEventListener("mousemove",onMove,{ passive:true });
-    card.addEventListener("mouseleave",onLeave,{ passive:true });
+  requestAnimationFrame(() => {
+    box.classList.remove("opacity-0");
+    box.firstElementChild.classList.remove("-translate-y-3");
   });
+  box
+    .querySelector("button")
+    .addEventListener("click", () => document.body.removeChild(box));
 }
 
-/* Ensure orientation flips recalc */
-window.addEventListener('orientationchange', () => {
-  setTimeout(() => window.dispatchEvent(new Event('resize')), 150);
-}, { passive:true });
+/* Navbar shadow on scroll */
+window.addEventListener(
+  "scroll",
+  () => {
+    const navbar = document.getElementById("navbar");
+    if (window.scrollY > 50) navbar.classList.add("shadow-lg");
+    else navbar.classList.remove("shadow-lg");
+  },
+  { passive: true }
+);
 
-/* Seamless credit ticker */
-(function setupTicker(){
-  const inner=document.querySelector(".ticker__inner");
-  const first=inner?.querySelector(".ticker__list");
-  const shell=document.querySelector(".ticker");
-  if(!inner||!first||!shell) return;
-  const fill=()=>{
-    const segW=first.getBoundingClientRect().width||first.offsetWidth;
-    const segMR=parseFloat(getComputedStyle(first).marginRight)||0;
-    const containerW=shell.getBoundingClientRect().width||shell.offsetWidth;
-    const needed=Math.max(2,Math.ceil(containerW/(segW+segMR))+2);
-    const current=inner.querySelectorAll(".ticker__list").length;
-    for(let i=current;i<needed;i++){ const clone=first.cloneNode(true); clone.setAttribute("aria-hidden","true"); inner.appendChild(clone); }
-    inner.style.setProperty("--ticker-w",`${Math.ceil(segW+segMR)}px`);
+/* Smooth anchor scrolling + close mobile menu */
+document.querySelectorAll('a[href^="#"]').forEach((a) => {
+  a.addEventListener("click", (e) => {
+    const target = document.querySelector(a.getAttribute("href"));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    const mobileMenu = document.getElementById("mobile-menu");
+    mobileMenu?.classList.remove("open");
+  });
+});
+
+/* Mobile menu */
+document.getElementById("mobile-menu-button")?.addEventListener("click", () => {
+  const mobileMenu = document.getElementById("mobile-menu");
+  const isOpen = mobileMenu.classList.toggle("open");
+  document
+    .getElementById("mobile-menu-button")
+    .setAttribute("aria-expanded", String(isOpen));
+});
+
+/* ---- Endless Credit Ticker (no seam) ---- */
+(function setupTicker() {
+  const inner = document.querySelector(".ticker__inner");
+  const firstList = document.querySelector(".ticker__list");
+  if (!inner || !firstList) return;
+
+  // Ensure a leading and trailing gap symmetry
+  const ensureDotSpacing = () => {
+    const items = firstList.querySelectorAll("li");
+    if (items[0] && !items[0].classList.contains("dot")) {
+      const dot = document.createElement("li");
+      dot.className = "dot";
+      dot.textContent = "•";
+      firstList.insertBefore(dot, items[0]);
+    }
   };
-  fill();
-  document.fonts?.ready.then(fill).catch(()=>{});
-  let tid; const onResize=()=>{ clearTimeout(tid); tid=setTimeout(fill,100); };
-  window.addEventListener("load",fill,{ passive:true });
-  window.addEventListener("resize",onResize,{ passive:true });
+  ensureDotSpacing();
+
+  const rebuild = () => {
+    // Clear clones
+    inner.querySelectorAll(".ticker__list.clone").forEach((n) => n.remove());
+
+    const listWidth = firstList.getBoundingClientRect().width;
+    const viewportWidth = inner.parentElement.getBoundingClientRect().width;
+    // We want at least 2x viewport width so the keyframe distance = listWidth
+    let needWidth = viewportWidth * 2 + listWidth;
+    let acc = listWidth;
+    while (acc < needWidth) {
+      const clone = firstList.cloneNode(true);
+      clone.classList.add("clone");
+      inner.appendChild(clone);
+      acc += listWidth;
+    }
+    inner.style.setProperty("--ticker-w", `${listWidth}px`);
+  };
+
+  const ro = new ResizeObserver(() => rebuild());
+  ro.observe(inner.parentElement);
+  rebuild();
 })();
 
-/* Beat helper */
-const Beat = (() => {
-  let player=null, ready=false, playing=false, beatOffset=0;
-  let bpm = Math.max(60, Math.min(180, window.MUSIC_BPM || 100));
+/* ---- Starfield (with subtle beat flares) ---- */
+(function starfield() {
+  const canvas = document.getElementById("starfield");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let w,
+    h,
+    stars = [];
+  const palette = [
+    "#22d3ee",
+    "#a78bfa",
+    "#f472b6",
+    "#14b8a6",
+    "#60a5fa",
+    "#22c55e",
+  ];
+  const STAR_COUNT = 160;
 
-  const easeOutCubic = x => 1 - Math.pow(1 - x, 3);
-
-  const getTime = () => {
-    if (!player || !ready) return 0;
-    try { return player.getCurrentTime() || 0; } catch { return 0; }
-  };
-  const getBeatIndex = () => {
-    if (!playing) return null;
-    const t = getTime();
-    const bps = bpm/60;
-    return Math.floor((t - beatOffset) * bps);
-  };
-  const getPulse = () => {
-    if (!ready || !playing || !player) return 0;
-    let t=0; try{ t = player.getCurrentTime() || 0; }catch{ t=0; }
-    const period = 60 / bpm;
-    let phase = (t - beatOffset) % period; if (phase < 0) phase += period;
-    const x = phase / period;
-    const windowWidth = 0.18;
-    const gain = 0.9;
-    if (x > windowWidth) return 0;
-    const normalized = 1 - (x / windowWidth);
-    return easeOutCubic(normalized) * gain;
-  };
-
-  const attach = (p) => { player = p; ready = !!p; };
-  const onPlay = () => { playing = true; try { beatOffset = player.getCurrentTime() || 0; } catch { beatOffset = 0; } };
-  const onPause = () => { playing = false; };
-  const setBpm = (x) => { bpm = Math.max(60, Math.min(180, x|0 || 100)); };
-
-  return { attach, onPlay, onPause, getPulse, getBeatIndex, setBpm };
-})();
-
-/* Starfield (adaptive + subtle beat pulse) */
-(function starfield(){
-  const canvas=document.getElementById("starfield"); if(!canvas) return;
-  const ctx=canvas.getContext("2d",{ alpha:true, desynchronized:true });
-  const palette=["#22d3ee","#60a5fa","#818cf8","#a78bfa","#f472b6","#14b8a6","#22c55e","#f59e0b","#fde047","#94a3b8"];
-
-  let stars=[], w=0, h=0, dpr=Math.max(1,Math.min(2,window.devicePixelRatio||1));
-  let quality = 1, running = quality>0;
-
-  function rand(min,max){ return Math.random()*(max-min)+min; }
-  function pick(a){ return a[(Math.random()*a.length)|0]; }
-
-  function resize(){
-    w=canvas.clientWidth=window.innerWidth;
-    h=canvas.clientHeight=window.innerHeight;
-    canvas.width=Math.floor(w*dpr);
-    canvas.height=Math.floor(h*dpr);
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    initStars();
-    draw(1);
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = canvas.width = Math.floor(window.innerWidth * dpr);
+    h = canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+    if (stars.length === 0) init();
   }
 
-  function initStars(){
-    const base=Math.min(260,Math.max(90,Math.floor((w*h)/18000)));
-    const count=Math.floor(base*quality);
-    stars = new Array(count).fill(0).map(()=>({
-      x: Math.random()*w, y: Math.random()*h, r: rand(0.5, 1.8),
-      a: rand(0.2, 0.85), da: rand(0.35, 0.9) * 0.012, up: Math.random() < 0.5,
-      color: pick(palette), bass: Math.random() < 0.35
+  function init() {
+    stars = Array.from({ length: STAR_COUNT }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: (Math.random() * 1.2 + 0.2) * dpr,
+      a: Math.random(),
+      hue: palette[(Math.random() * palette.length) | 0],
+      tw: Math.random() * Math.PI * 2,
     }));
   }
 
-  function draw(dt){
-    ctx.clearRect(0,0,w,h);
-    const pulse = Beat.getPulse();
-    const baseBlur = quality>0.8 ? 12 : quality>0.5 ? 8 : 5;
-    const blur = baseBlur * (1 + pulse * 0.25);
+  function render(t) {
+    ctx.clearRect(0, 0, w, h);
+    for (const s of stars) {
+      s.tw += 0.015 + Math.random() * 0.003;
+      const twinkle = (Math.sin(s.tw) + 1) / 2; // 0..1
+      const alpha = 0.25 + twinkle * 0.55; // softer range
+      ctx.beginPath();
+      ctx.fillStyle = hexToRgba(s.hue, alpha);
+      ctx.arc(s.x, s.y, s.r * (0.8 + twinkle * 0.3), 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(render);
+  }
 
-    for(const s of stars){
-      if(running){
-        s.a += (s.up?s.da:-s.da)*dt;
-        if(s.a>0.9){ s.a=0.9; s.up=false; }
-        if(s.a<0.08){ s.a=0.08; s.up=true; s.color = s.color; s.da=rand(0.35,0.9)*0.012; }
-      }
-      let scale = 1, alpha = s.a;
-      if (s.bass && pulse > 0){ scale = 1 + pulse * 0.12; alpha = Math.min(1, s.a + pulse * 0.15); }
-      ctx.save(); ctx.globalAlpha = alpha; ctx.shadowBlur = blur; ctx.shadowColor = s.color; ctx.fillStyle = s.color;
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r * scale, 0, Math.PI*2); ctx.fill(); ctx.restore();
+  function hexToRgba(hex, a) {
+    const v = hex.replace("#", "");
+    const r = parseInt(v.substring(0, 2), 16);
+    const g = parseInt(v.substring(2, 4), 16);
+    const b = parseInt(v.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  // "Beat" flares - subtle; triggered by our beat scheduler below
+  function flareStars() {
+    const n = 8 + ((Math.random() * 6) | 0);
+    for (let i = 0; i < n; i++) {
+      const s = stars[(Math.random() * stars.length) | 0];
+      s.tw += Math.PI / 2; // quick brighten
+      s.hue = palette[(Math.random() * palette.length) | 0];
     }
   }
 
-  let last=performance.now(), raf=null, emaDt=1;
-  function loop(t){
-    const dt=Math.min(3,(t-last)/(1000/60)); last=t; emaDt=emaDt*0.9+dt*0.1;
-    if(emaDt>1.6 && quality>0.5){ quality=Math.max(0.5,quality-0.1); initStars(); }
-    else if(emaDt<1.1 && quality<1){ quality=Math.min(1,quality+0.02); initStars(); }
-    draw(dt);
-    if(running) raf=requestAnimationFrame(loop);
-  }
-
-  let scrollTimer=null;
-  const onScroll=()=>{
-    if(!running) return;
-    if(raf){ cancelAnimationFrame(raf); raf=null; }
-    draw(0);
-    clearTimeout(scrollTimer);
-    scrollTimer=setTimeout(()=>{ last=performance.now(); raf=requestAnimationFrame(loop); },120);
-  };
-
-  resize(); if(running) raf=requestAnimationFrame(loop);
-  document.addEventListener("visibilitychange",()=>{
-    if(document.hidden){ running=false; if(raf) cancelAnimationFrame(raf); raf=null; }
-    else { running=true; last=performance.now(); raf=requestAnimationFrame(loop); }
-  });
-  window.addEventListener("resize",(()=>{ let rid; return ()=>{ clearTimeout(rid); rid=setTimeout(resize,100);} })(),{ passive:true });
-  window.addEventListener("scroll",onScroll,{ passive:true });
+  window.__starfieldFlare = flareStars; // expose to beat scheduler
+  window.addEventListener("resize", resize, { passive: true });
+  resize();
+  init();
+  requestAnimationFrame(render);
 })();
 
-/* YouTube Background Music (autoplay attempt @ ~7%, with nudge fallback) */
-(function music(){
-  const panel=document.createElement("div");
-  panel.id="music-panel";
-  panel.innerHTML=`
-    <div id="yt-sound"></div>
-    <button id="music-play" class="icon-btn" title="Play/Pause" aria-label="Play or pause">▶</button>
-    <button id="music-mute" class="icon-btn" title="Mute/Unmute" aria-label="Mute or unmute">🔊</button>
-    <span class="label">Vol</span><input id="music-vol" type="range" min="0" max="100" value="7" aria-label="Volume">
-    <span id="music-nudge" hidden>Enable audio</span>
-  `;
-  document.body.appendChild(panel);
-
-  const api=document.createElement("script"); api.src="https://www.youtube.com/iframe_api"; document.head.appendChild(api);
-
-  let player=null, ready=false, playing=false;
-  const volEl=document.getElementById("music-vol");
-  const playBtn=document.getElementById("music-play");
-  const muteBtn=document.getElementById("music-mute");
-  const nudge=document.getElementById("music-nudge");
-
-  window.onYouTubeIframeAPIReady = () => {
-    player = new YT.Player("yt-sound", {
-      width:1, height:1, videoId:YT_VIDEO_ID,
-      playerVars:{ autoplay:1, controls:0, disablekb:1, loop:1, playlist:YT_VIDEO_ID, modestbranding:1, rel:0, mute:0, playsinline:1 },
-      events:{
-        onReady: () => {
-          ready = true;
-          try { player.unMute(); player.setVolume(7); player.playVideo(); } catch(e){}
-          setTimeout(checkAutoplayResult, 1500);
-          Beat.attach(player);
-        },
-        onStateChange: (e) => {
-          playing = (e.data === YT.PlayerState.PLAYING);
-          playBtn.textContent = playing ? "⏸" : "▶";
-          if (playing){ Beat.onPlay(); if (!isHidden(nudge)) hideNudge(); }
-          else { Beat.onPause(); }
-        }
-      }
-    });
-  };
-
-  function isHidden(el){ return el.hasAttribute("hidden"); }
-  function showNudge(){ nudge.removeAttribute("hidden"); }
-  function hideNudge(){ nudge.setAttribute("hidden",""); }
-
-  function checkAutoplayResult(){
-    if (!player) return;
-    const state = player.getPlayerState?.();
-    if (state !== YT.PlayerState.PLAYING){
-      showNudge();
-      const unlock = () => {
-        hideNudge();
-        try { player.unMute(); player.setVolume(7); player.playVideo(); } catch(e){}
-        window.removeEventListener("pointerdown", unlock, { passive:true });
-        window.removeEventListener("keydown", unlock, { passive:true });
-        window.removeEventListener("scroll", unlock, { passive:true });
-      };
-      window.addEventListener("pointerdown", unlock, { once:true, passive:true });
-      window.addEventListener("keydown", unlock, { once:true, passive:true });
-      window.addEventListener("scroll", unlock, { once:true, passive:true });
-    }
-  }
-
-  playBtn.addEventListener("click", ()=>{
-    if(!ready) return;
-    try{
-      if(playing){ player.pauseVideo(); }
-      else{ player.unMute(); player.setVolume(parseInt(volEl.value,10)||7); player.playVideo(); }
-    }catch{}
-  }, { passive:true });
-
-  muteBtn.addEventListener("click", ()=>{
-    if(!ready) return;
-    try{
-      if(player.isMuted && player.isMuted()){ player.unMute(); muteBtn.textContent="🔊"; muteBtn.classList.remove("active"); }
-      else{ player.mute(); muteBtn.textContent="🔇"; muteBtn.classList.add("active"); }
-    }catch{}
-  }, { passive:true });
-
-  volEl.addEventListener("input", ()=>{
-    if(!ready) return;
-    try{ player.setVolume(parseInt(volEl.value,10)||0); }catch{}
-  }, { passive:true });
-
-})();
-
-/* About cards: one-at-a-time random beat accent */
-(function cardsBeat(){
+/* ---- Beat Scheduler (BPM-based; does NOT analyze audio) ---- */
+(function beatScheduler() {
   if (REDUCE_MOTION) return;
-  const cards = Array.from(document.querySelectorAll('#about .neon-card'));
-  if (!cards.length) return;
+  const bpm = window.MUSIC_BPM || 100;
+  const interval = 60_000 / bpm; // ms per beat
+  let last = performance.now();
 
-  let lastBeat = null;
-  let lastCardIndex = -1;
-  const timers = new Map();
+  const aboutCards = Array.from(document.querySelectorAll("#about .neon-card"));
 
-  const pickNext = () => {
-    if (cards.length === 1) return 0;
-    let i;
-    do { i = (Math.random() * cards.length) | 0; } while (i === lastCardIndex);
-    return i;
-  };
+  function tick(now) {
+    if (now - last >= interval) {
+      last = now;
 
-  const tick = () => {
-    const idx = Beat.getBeatIndex && Beat.getBeatIndex();
-    if (typeof idx === 'number' && idx !== lastBeat){
-      lastBeat = idx;
-      const i = pickNext();
-      lastCardIndex = i;
-      const el = cards[i];
-      if (timers.has(el)) clearTimeout(timers.get(el));
-      el.classList.add('card-beat');
-      const dur = 160;
-      const t = setTimeout(()=>{ el.classList.remove('card-beat'); }, dur);
-      timers.set(el, t);
+      // Starfield subtle flare
+      if (typeof window.__starfieldFlare === "function")
+        window.__starfieldFlare();
+
+      // One random About card gets a brief glow
+      if (aboutCards.length) {
+        const idx = (Math.random() * aboutCards.length) | 0;
+        const card = aboutCards[idx];
+        card.classList.add("card-beat");
+        setTimeout(() => card.classList.remove("card-beat"), 170);
+      }
     }
     requestAnimationFrame(tick);
-  };
+  }
   requestAnimationFrame(tick);
 })();
+
+/* ---- Lightweight Music UI (YouTube embed on demand) ---- */
+(function musicUI() {
+  const panel = document.getElementById("music-panel");
+  const btn = document.getElementById("music-toggle");
+  const muteBtn = document.getElementById("music-mute");
+  const vol = document.getElementById("music-vol");
+  const nudge = document.getElementById("music-nudge");
+  if (!panel || !btn || !muteBtn || !vol) return;
+
+  panel.classList.remove("hidden"); // show panel
+
+  let player = null;
+  let isMuted = true;
+  let isPlaying = false;
+
+  function loadYT(onReady) {
+    if (window.YT && window.YT.Player) {
+      onReady();
+      return;
+    }
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    window.onYouTubeIframeAPIReady = onReady;
+    document.body.appendChild(tag);
+  }
+
+  function ensurePlayer(cb) {
+    if (player) return cb();
+    loadYT(() => {
+      player = new YT.Player("yt-sound", {
+        height: "0",
+        width: "0",
+        videoId: YT_VIDEO_ID,
+        playerVars: { autoplay: 0, controls: 0, disablekb: 1, playsinline: 1 },
+        events: {
+          onReady: (e) => {
+            player.setVolume(Math.round(parseFloat(vol.value) * 100));
+            player.mute(); // start muted to satisfy autoplay rules
+            isMuted = true;
+            if (cb) cb();
+          },
+          onStateChange: (e) => {
+            if (e.data === YT.PlayerState.PLAYING) {
+              isPlaying = true;
+              btn.classList.add("active");
+              btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+              nudge.classList.add("hidden");
+            }
+            if (
+              e.data === YT.PlayerState.PAUSED ||
+              e.data === YT.PlayerState.ENDED
+            ) {
+              isPlaying = false;
+              btn.classList.remove("active");
+              btn.innerHTML = '<i class="fa-solid fa-play"></i>';
+            }
+          },
+        },
+      });
+    });
+  }
+
+  btn.addEventListener("click", () => {
+    ensurePlayer(() => {
+      if (!isPlaying) {
+        // First user gesture -> unmute respecting volume slider
+        if (isMuted) {
+          player.unMute();
+          isMuted = false;
+          muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+        }
+        player.playVideo();
+      } else {
+        player.pauseVideo();
+      }
+    });
+  });
+
+  muteBtn.addEventListener("click", () => {
+    if (!player) return;
+    if (isMuted) {
+      player.unMute();
+      isMuted = false;
+      muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+    } else {
+      player.mute();
+      isMuted = true;
+      muteBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+    }
+  });
+
+  vol.addEventListener("input", () => {
+    if (!player) return;
+    player.setVolume(Math.round(parseFloat(vol.value) * 100));
+  });
+
+  // Inform the user they need to click once
+  setTimeout(() => nudge.classList.remove("hidden"), 600);
+})();
+
+/* Utility: throttle */
+function throttle(fn, wait = 100) {
+  let t = 0;
+  return (...args) => {
+    const now = Date.now();
+    if (now - t > wait) {
+      t = now;
+      fn(...args);
+    }
+  };
+}

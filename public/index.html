@@ -1,10 +1,3 @@
-<!--
-  This is the static front‑end for David Northrop's portfolio site.
-  It leverages TailwindCSS for styling and includes a custom contact form
-  that talks to a back‑end Express server.  The original HTML provided by
-  the user has been cleaned up slightly and enhanced to integrate with the
-  back‑end API.  See server/index.js for details on the API endpoints.
--->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -36,97 +29,10 @@
       crossorigin="anonymous"
     />
 
-    <style>
-      :root {
-        --primary-color: #0066ff;
-        --secondary-color: #0047b3;
-        --accent-color: #00d4ff;
-      }
-      .font-inter {
-        font-family: "Inter", sans-serif;
-      }
-
-      /* Base and Custom Styles for Icons & Animations */
-      html {
-        scroll-behavior: smooth;
-      }
-      .logo {
-        background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        cursor: pointer;
-      }
-      .nav-link-underline::after {
-        content: "";
-        position: absolute;
-        bottom: -5px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: var(--primary-color);
-        transition: width 0.3s ease;
-      }
-      .nav-link-underline:hover::after {
-        width: 100%;
-      }
-      .profile-ring {
-        animation: rotate 20s linear infinite;
-      }
-      .code-visual {
-        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-      }
-      @keyframes rotate {
-        from {
-          transform: rotate(0deg);
-        }
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.5;
-        }
-      }
-      .mobile-menu-link {
-        transition: transform 0.3s ease, opacity 0.3s ease;
-        transform: translateX(-100%);
-        opacity: 0;
-      }
-      .mobile-menu.open .mobile-menu-link {
-        transform: translateX(0);
-        opacity: 1;
-      }
-
-      /* New CSS for Hero Background Image */
-      .hero-bg-image {
-        background-image: url("https://img.freepik.com/free-photo/html-css-collage-concept_23-2150061955.jpg?semt=ais_incoming&w=740&q=80");
-        background-size: cover;
-        background-position: center;
-        position: relative;
-        z-index: 1;
-      }
-      .hero-bg-image::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.541);
-        z-index: 2;
-      }
-      .hero-content {
-        position: relative;
-        z-index: 3;
-      }
-    </style>
+    <!-- Your styles -->
+    <link rel="stylesheet" href="styles.css" />
   </head>
+
   <body class="bg-white text-gray-900 font-inter antialiased">
     <!-- Navigation -->
     <nav
@@ -136,10 +42,7 @@
       <div
         class="container mx-auto px-6 py-4 flex justify-between items-center"
       >
-        <div
-          class="text-2xl font-extrabold logo"
-          onclick="document.getElementById('home').scrollIntoView({behavior: 'smooth'})"
-        >
+        <div id="logo" class="text-2xl font-extrabold logo cursor-pointer">
           David Northrop
         </div>
         <ul class="hidden md:flex space-x-8">
@@ -181,18 +84,17 @@
           <i class="fas fa-bars text-2xl"></i>
         </button>
       </div>
+
       <!-- Mobile menu -->
       <div
         id="mobile-menu"
-        class="mobile-menu md:hidden bg-white w-full overflow-hidden transition-all duration-300 ease-in-out"
-        style="max-height: 0"
+        class="mobile-menu md:hidden bg-white w-full overflow-hidden"
       >
         <ul class="py-4 px-6 space-y-4">
           <li>
             <a
               href="#home"
               class="block py-2 text-gray-900 font-medium mobile-menu-link"
-              style="transition-delay: 0s"
               >Home</a
             >
           </li>
@@ -200,7 +102,6 @@
             <a
               href="#about"
               class="block py-2 text-gray-900 font-medium mobile-menu-link"
-              style="transition-delay: 0.1s"
               >About</a
             >
           </li>
@@ -208,7 +109,6 @@
             <a
               href="#portfolio"
               class="block py-2 text-gray-900 font-medium mobile-menu-link"
-              style="transition-delay: 0.2s"
               >Portfolio</a
             >
           </li>
@@ -216,7 +116,6 @@
             <a
               href="#contact"
               class="block py-2 text-gray-900 font-medium mobile-menu-link"
-              style="transition-delay: 0.3s"
               >Contact</a
             >
           </li>
@@ -235,24 +134,20 @@
         <!-- Hero Text -->
         <div class="text-white">
           <h1
-            class="text-5xl md:text-6xl font-extrabold leading-tight mb-4"
+            class="text-5xl md:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-up"
           >
             David Northrop
           </h1>
-          <p
-            class="text-2xl font-light mb-6 opacity-90"
-          >
-            Digital Product Designer & Full‑Stack Web Developer
+          <p class="text-2xl font-light mb-6 opacity-90 animate-fade-in-up">
+            Digital Product Designer & Full-Stack Web Developer
           </p>
-          <p
-            class="text-lg opacity-80 mb-8 leading-relaxed"
-          >
+          <p class="text-lg opacity-80 mb-8 leading-relaxed animate-fade-in-up">
             I craft exceptional digital experiences that blend stunning design
             with powerful functionality. Specializing in the
             <span class="font-bold">MERN stack</span>, I transform ideas into
             scalable applications with intuitive interfaces.
           </p>
-          <div class="flex flex-wrap gap-4">
+          <div class="flex flex-wrap gap-4 animate-fade-in-up">
             <a
               href="#portfolio"
               class="bg-white text-blue-600 font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-center gap-2"
@@ -272,7 +167,7 @@
 
     <!-- About Section -->
     <section id="about" class="py-20 md:py-32 bg-gray-50">
-      <div class="container mx-auto px-6">
+      <div class="container mx-auto px-6 lazy-load">
         <h2
           class="text-4xl md:text-5xl font-extrabold text-center mb-16 bg-gradient-to-r from-blue-600 to-purple-800 bg-clip-text text-transparent"
         >
@@ -298,17 +193,17 @@
             <p class="text-gray-600 text-lg mb-6 leading-relaxed">
               Hello! I'm David Northrop, a passionate
               <strong class="text-gray-900"
-                >Digital Product Designer and Full‑Stack Web Developer</strong
+                >Digital Product Designer and Full-Stack Web Developer</strong
               >. My unique background allows me to bridge the gap between
-              beautiful, user‑centric design and robust, functional development.
+              beautiful, user-centric design and robust, functional development.
             </p>
             <p class="text-gray-600 text-lg mb-6 leading-relaxed">
               I specialize in the
               <strong class="text-gray-900"
                 >MERN stack (MongoDB, Express.js, React, Node.js)</strong
-              >, building scalable, component‑based web applications. I handle
+              >, building scalable, component-based web applications. I handle
               the entire development lifecycle, from designing RESTful APIs to
-              implementing responsive front‑end components, ensuring a seamless
+              implementing responsive front-end components, ensuring a seamless
               user experience across all devices.
             </p>
           </div>
@@ -318,7 +213,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- Design Skills -->
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-blue-600">
               <i class="fab fa-figma"></i>
@@ -327,7 +222,7 @@
             <p class="text-gray-500">Expert Level</p>
           </div>
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-purple-600">
               <i class="fas fa-graduation-cap"></i>
@@ -338,7 +233,7 @@
             <p class="text-gray-500">Magna cum laude</p>
           </div>
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-pink-600">
               <i class="fas fa-palette"></i>
@@ -347,7 +242,7 @@
             <p class="text-gray-500">Advanced Level</p>
           </div>
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-purple-600">
               <i class="fab fa-adobe"></i>
@@ -358,7 +253,7 @@
 
           <!-- Development Skills -->
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-blue-600">
               <i class="fab fa-react"></i>
@@ -367,7 +262,7 @@
             <p class="text-gray-500">Expert Level</p>
           </div>
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-orange-500">
               <i class="fab fa-html5"></i>
@@ -376,7 +271,7 @@
             <p class="text-gray-500">Expert Level</p>
           </div>
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-yellow-500">
               <i class="fab fa-js-square"></i>
@@ -387,18 +282,18 @@
 
           <!-- TripleTen Certificate -->
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-blue-500">
               <i class="fas fa-graduation-cap"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">TripleTen Certificate</h4>
-            <p class="text-gray-500">Full‑Stack Web Developer</p>
+            <p class="text-gray-500">Full-Stack Web Developer</p>
           </div>
 
-          <!-- Back‑End Skills -->
+          <!-- Back-End Skills -->
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-green-600">
               <i class="fab fa-node-js"></i>
@@ -407,7 +302,7 @@
             <p class="text-gray-500">Expert Level</p>
           </div>
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-blue-800">
               <i class="fas fa-database"></i>
@@ -416,7 +311,7 @@
             <p class="text-gray-500">Advanced Level</p>
           </div>
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div class="text-4xl mb-4 text-gray-800">
               <i class="fab fa-git-alt"></i>
@@ -430,7 +325,7 @@
 
     <!-- Portfolio Section -->
     <section id="portfolio" class="py-20 md:py-32 bg-white">
-      <div class="container mx-auto px-6">
+      <div class="container mx-auto px-6 lazy-load">
         <h2
           class="text-4xl md:text-5xl font-extrabold text-center mb-16 bg-gradient-to-r from-purple-600 to-red-600 bg-clip-text text-transparent"
         >
@@ -438,7 +333,7 @@
         </h2>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div
-            class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div
               class="h-64 bg-gradient-to-br from-pink-400 to-red-500 flex items-center justify-center text-white text-5xl"
@@ -446,10 +341,10 @@
               <i class="fas fa-shopping-cart"></i>
             </div>
             <div class="p-8">
-              <h3 class="text-2xl font-bold mb-2">E‑Commerce Platform</h3>
+              <h3 class="text-2xl font-bold mb-2">E-Commerce Platform</h3>
               <p class="text-gray-600 mb-4">
-                Full‑featured MERN stack shopping platform with user
-                authentication, payment processing, and real‑time inventory
+                Full-featured MERN stack shopping platform with user
+                authentication, payment processing, and real-time inventory
                 management.
               </p>
               <div class="flex flex-wrap gap-2">
@@ -474,7 +369,7 @@
           </div>
 
           <div
-            class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div
               class="h-64 bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-white text-5xl"
@@ -484,7 +379,7 @@
             <div class="p-8">
               <h3 class="text-2xl font-bold mb-2">Project Management Tool</h3>
               <p class="text-gray-600 mb-4">
-                Collaborative app with real‑time updates, drag‑and‑drop
+                Collaborative app with real-time updates, drag-and-drop
                 functionality, and comprehensive team collaboration features.
               </p>
               <div class="flex flex-wrap gap-2">
@@ -509,7 +404,7 @@
           </div>
 
           <div
-            class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-2"
+            class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-2 lazy-load"
           >
             <div
               class="h-64 bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center text-white text-5xl"
@@ -520,7 +415,7 @@
               <h3 class="text-2xl font-bold mb-2">Analytics Dashboard</h3>
               <p class="text-gray-600 mb-4">
                 Comprehensive data visualization dashboard with interactive
-                charts and real‑time metrics tracking.
+                charts and real-time metrics tracking.
               </p>
               <div class="flex flex-wrap gap-2">
                 <span
@@ -548,7 +443,7 @@
 
     <!-- Contact Section -->
     <section id="contact" class="py-20 md:py-32 bg-gray-50">
-      <div class="container mx-auto px-6">
+      <div class="container mx-auto px-6 lazy-load">
         <h2
           class="text-4xl md:text-5xl font-extrabold text-center mb-16 bg-gradient-to-r from-blue-600 to-purple-800 bg-clip-text text-transparent"
         >
@@ -570,9 +465,7 @@
                 <i class="fas fa-envelope"></i>
               </div>
               <div>
-                <strong class="block text-gray-900 font-semibold"
-                  >Email</strong
-                >
+                <strong class="block text-gray-900 font-semibold">Email</strong>
                 <span class="text-gray-600">nortda85@gmail.com</span>
               </div>
             </div>
@@ -712,135 +605,12 @@
         </div>
         <p class="text-gray-400 text-sm">
           &copy; 2025 David Northrop. All rights reserved. | Digital Product
-          Designer & Full‑Stack Web Developer
+          Designer & Full-Stack Web Developer
         </p>
       </div>
     </footer>
 
-    <script>
-      // Intersection Observer for lazy loading animations (no op here)
-      const observer = new IntersectionObserver(
-        (entries, observer) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.remove("opacity-0", "translate-y-5");
-              entry.target.classList.add("loaded");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-      );
-
-      document.querySelectorAll(".lazy-load").forEach((element) => {
-        element.classList.add(
-          "opacity-0",
-          "translate-y-5",
-          "transition-all",
-          "duration-1000"
-        );
-        observer.observe(element);
-      });
-
-      // Form submission handler – sends data to our Express back‑end
-      document
-        .getElementById("contactForm")
-        .addEventListener("submit", async function (e) {
-          e.preventDefault();
-          const name = document.getElementById("name").value;
-          const email = document.getElementById("email").value;
-          const subject = document.getElementById("subject").value;
-          const message = document.getElementById("message").value;
-          const button = this.querySelector("button[type='submit']");
-          const originalText = button.innerHTML;
-          button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-          button.disabled = true;
-          try {
-            const res = await fetch("/api/contact", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ name, email, subject, message }),
-            });
-            const data = await res.json();
-            if (res.ok) {
-              showCustomMessageBox(
-                "Message Sent!",
-                "Thank you for your message! I'll get back to you within 24 hours."
-              );
-              this.reset();
-            } else {
-              showCustomMessageBox("Error", data.error || "Something went wrong. Please try again later.");
-            }
-          } catch (err) {
-            showCustomMessageBox("Error", "Network error. Please try again later.");
-          }
-          button.innerHTML = originalText;
-          button.disabled = false;
-        });
-
-      // Custom message box function to replace alert()
-      function showCustomMessageBox(title, message) {
-        const messageBox = document.createElement("div");
-        messageBox.className =
-          "fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-[1001] transition-opacity duration-300 opacity-0";
-        messageBox.innerHTML = `
-          <div class="bg-white p-8 rounded-2xl shadow-xl text-center max-w-sm w-full font-inter transform -translate-y-5 transition-transform duration-300">
-            <h4 class="text-2xl font-bold mb-4">${title}</h4>
-            <p class="text-gray-600 mb-6">${message}</p>
-            <button onclick="document.body.removeChild(this.closest('.fixed'))" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">OK</button>
-          </div>
-        `;
-        document.body.appendChild(messageBox);
-        setTimeout(() => {
-          messageBox.classList.remove("opacity-0");
-          messageBox.querySelector("div").classList.remove("-translate-y-5");
-        }, 10);
-      }
-
-      // Navbar background on scroll
-      window.addEventListener("scroll", function () {
-        const navbar = document.getElementById("navbar");
-        if (window.scrollY > 50) {
-          navbar.classList.add("shadow-lg");
-        } else {
-          navbar.classList.remove("shadow-lg");
-        }
-      });
-
-      // Smooth scrolling for navigation links
-      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-        anchor.addEventListener("click", function (e) {
-          e.preventDefault();
-          const target = document.querySelector(this.getAttribute("href"));
-          if (target) {
-            target.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-            // Close mobile menu after clicking a link
-            const mobileMenu = document.getElementById("mobile-menu");
-            mobileMenu.style.maxHeight = "0";
-            mobileMenu.classList.remove("open");
-          }
-        });
-      });
-
-      // Mobile menu toggle functionality
-      document
-        .getElementById("mobile-menu-button")
-        .addEventListener("click", function () {
-          const mobileMenu = document.getElementById("mobile-menu");
-          const isOpen = mobileMenu.classList.contains("open");
-          if (isOpen) {
-            mobileMenu.style.maxHeight = "0";
-            mobileMenu.classList.remove("open");
-          } else {
-            mobileMenu.style.maxHeight = mobileMenu.scrollHeight + "px";
-            mobileMenu.classList.add("open");
-          }
-        });
-    </script>
+    <!-- Your scripts -->
+    <script defer src="script.js"></script>
   </body>
 </html>

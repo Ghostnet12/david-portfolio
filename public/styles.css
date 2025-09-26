@@ -1,0 +1,134 @@
+:root {
+  --primary-color: #0066ff;
+  --secondary-color: #0047b3;
+  --accent-color: #00d4ff;
+}
+
+.font-inter {
+  font-family: "Inter", sans-serif;
+}
+
+/* Base */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Logo gradient text */
+.logo {
+  background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Link underline hover */
+.nav-link-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary-color);
+  transition: width 0.3s ease;
+}
+.nav-link-underline:hover::after {
+  width: 100%;
+}
+
+/* Decorative animations */
+.profile-ring {
+  animation: rotate 20s linear infinite;
+}
+.code-visual {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Mobile menu */
+.mobile-menu {
+  transition: max-height 0.3s ease;
+  max-height: 0; /* closed by default */
+}
+.mobile-menu-link {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform: translateX(-100%);
+  opacity: 0;
+}
+.mobile-menu.open .mobile-menu-link {
+  transform: translateX(0);
+  opacity: 1;
+}
+/* Staggered reveal without inline styles */
+#mobile-menu li:nth-child(1) .mobile-menu-link {
+  transition-delay: 0s;
+}
+#mobile-menu li:nth-child(2) .mobile-menu-link {
+  transition-delay: 0.1s;
+}
+#mobile-menu li:nth-child(3) .mobile-menu-link {
+  transition-delay: 0.2s;
+}
+#mobile-menu li:nth-child(4) .mobile-menu-link {
+  transition-delay: 0.3s;
+}
+
+/* Hero background image + overlay */
+.hero-bg-image {
+  background-image: url("https://img.freepik.com/free-photo/html-css-collage-concept_23-2150061955.jpg?semt=ais_incoming&w=740&q=80");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  z-index: 1;
+}
+.hero-bg-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.54);
+  z-index: 2;
+}
+.hero-content {
+  position: relative;
+  z-index: 3;
+}
+
+/* Simple fade-in-up helper */
+.animate-fade-in-up {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Lazy-load starting state; script will add .loaded */
+.lazy-load {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1000ms;
+}
+.lazy-load.loaded {
+  opacity: 1;
+  transform: translateY(0);
+}

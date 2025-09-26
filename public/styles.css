@@ -565,3 +565,13 @@ footer .container {
   padding: 0.25rem 0.6rem;
   margin-left: 0.3rem;
 }
+
+/* Subtle beat highlight for About cards (random, one-at-a-time) */
+#about .neon-card.card-beat {
+  box-shadow: 0 0 36px -12px color-mix(in oklab, var(--neon), #000 0%),
+    0 26px 64px -36px rgba(0, 0, 0, 0.85), 0 0 26px rgba(34, 211, 238, 0.55);
+  border-color: color-mix(in oklab, var(--neon), white 22%);
+}
+#about .neon-card.card-beat::before {
+  opacity: 0.58;
+}

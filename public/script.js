@@ -1,8 +1,7 @@
 // === Config ===
 const CONTACT_EMAIL = "nortda85@gmail.com";
 const YT_VIDEO_ID = "RXr7lQxxtzM"; // your music link ID
-// Adjust this if you want a different groove; 92–110 works great for lo-fi/hip-hop.
-window.MUSIC_BPM = window.MUSIC_BPM || 100;
+window.MUSIC_BPM = window.MUSIC_BPM || 100; // tweakable in console
 
 const REDUCE_MOTION = window.matchMedia(
   "(prefers-reduced-motion: reduce)"
@@ -187,44 +186,49 @@ if (!REDUCE_MOTION) {
   window.addEventListener("resize", onResize, { passive: true });
 })();
 
-/* Starfield (adaptive + subtle beat pulse) */
+/* === Beat helper for sync triggers === */
 const Beat = (() => {
   let player = null,
     ready = false,
     playing = false,
     beatOffset = 0;
+  let bpm = Math.max(60, Math.min(180, window.MUSIC_BPM || 100));
 
   const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
 
-  const getPulse = () => {
-    if (
-      !ready ||
-      !playing ||
-      !player ||
-      typeof player.getCurrentTime !== "function"
-    )
+  const getTime = () => {
+    if (!player || !ready) return 0;
+    try {
+      return player.getCurrentTime() || 0;
+    } catch {
       return 0;
+    }
+  };
+  const getBeatIndex = () => {
+    if (!playing) return null;
+    const t = getTime();
+    const bps = bpm / 60;
+    return Math.floor((t - beatOffset) * bps);
+  };
+  const getPulse = () => {
+    if (!ready || !playing || !player) return 0;
     let t = 0;
     try {
       t = player.getCurrentTime() || 0;
     } catch {
       t = 0;
     }
-    const bpm = Math.max(60, Math.min(180, window.MUSIC_BPM || 100));
-    const period = 60 / bpm; // seconds per beat
-    let phase = (t - beatOffset) % period; // 0..period
+    const period = 60 / bpm;
+    let phase = (t - beatOffset) % period;
     if (phase < 0) phase += period;
-    const x = phase / period; // 0..1 within beat
-
-    // Short pulse near the downbeat, then decay. Keep it subtle.
-    const windowWidth = 0.18; // % of beat for the attack window
-    const gain = 0.9; // pulse strength before easing
+    const x = phase / period; // 0..1
+    const windowWidth = 0.18; // attack window
+    const gain = 0.9;
     if (x > windowWidth) return 0;
-    const normalized = 1 - x / windowWidth; // 1 -> 0 across window
-    return easeOutCubic(normalized) * gain; // 0..~0.9 but we scale it way down in starfield
+    const normalized = 1 - x / windowWidth;
+    return easeOutCubic(normalized) * gain;
   };
 
-  // Expose a hook for starfield to register player once it exists
   const attach = (p) => {
     player = p;
     ready = !!p;
@@ -240,10 +244,14 @@ const Beat = (() => {
   const onPause = () => {
     playing = false;
   };
+  const setBpm = (x) => {
+    bpm = Math.max(60, Math.min(180, x | 0 || 100));
+  };
 
-  return { attach, onPlay, onPause, getPulse };
+  return { attach, onPlay, onPause, getPulse, getBeatIndex, setBpm };
 })();
 
+/* Starfield (adaptive + subtle beat pulse) */
 (function starfield() {
   const canvas = document.getElementById("starfield");
   if (!canvas) return;
@@ -296,18 +304,15 @@ const Beat = (() => {
       da: rand(0.35, 0.9) * 0.012,
       up: Math.random() < 0.5,
       color: pick(palette),
-      bass: Math.random() < 0.35, // subset that reacts to "bass"
+      bass: Math.random() < 0.35,
     }));
   }
 
   function draw(dt) {
     ctx.clearRect(0, 0, w, h);
-
-    // subtle beat pulse (0..~0.9), we scale to tiny amounts
     const pulse = Beat.getPulse();
-    // base blur adjusts a touch with pulse
     const baseBlur = quality > 0.8 ? 12 : quality > 0.5 ? 8 : 5;
-    const blur = baseBlur * (1 + pulse * 0.25); // +25% max on beat
+    const blur = baseBlur * (1 + pulse * 0.25);
 
     for (const s of stars) {
       if (running) {
@@ -319,19 +324,16 @@ const Beat = (() => {
         if (s.a < 0.08) {
           s.a = 0.08;
           s.up = true;
-          s.color = pick(palette);
+          s.color = s.color;
           s.da = rand(0.35, 0.9) * 0.012;
         }
       }
-
-      // Per-star subtle modulation on beat for bass-reactive stars
       let scale = 1,
         alpha = s.a;
       if (s.bass && pulse > 0) {
-        scale = 1 + pulse * 0.12; // up to +12% size
-        alpha = Math.min(1, s.a + pulse * 0.15); // small brightness lift
+        scale = 1 + pulse * 0.12;
+        alpha = Math.min(1, s.a + pulse * 0.15);
       }
-
       ctx.save();
       ctx.globalAlpha = alpha;
       ctx.shadowBlur = blur;
@@ -454,7 +456,6 @@ const Beat = (() => {
             player.playVideo();
           } catch (e) {}
           setTimeout(checkAutoplayResult, 1500);
-          // Give starfield access to timing for beat grid
           Beat.attach(player);
         },
         onStateChange: (e) => {
@@ -553,4 +554,45 @@ const Beat = (() => {
     },
     { passive: true }
   );
+})();
+
+/* === About cards: one-at-a-time random beat accent === */
+(function cardsBeat() {
+  if (REDUCE_MOTION) return;
+  const cards = Array.from(document.querySelectorAll("#about .neon-card"));
+  if (!cards.length) return;
+
+  let lastBeat = null;
+  let lastCardIndex = -1;
+  const timers = new Map();
+
+  const pickNext = () => {
+    if (cards.length === 1) return 0;
+    let i;
+    do {
+      i = (Math.random() * cards.length) | 0;
+    } while (i === lastCardIndex);
+    return i;
+  };
+
+  const tick = () => {
+    const idx = Beat.getBeatIndex && Beat.getBeatIndex();
+    if (typeof idx === "number" && idx !== lastBeat) {
+      lastBeat = idx;
+      const i = pickNext();
+      lastCardIndex = i;
+      const el = cards[i];
+      // clear any existing timer on this card
+      if (timers.has(el)) clearTimeout(timers.get(el));
+      el.classList.add("card-beat");
+      // keep it brief and subtle
+      const dur = 160;
+      const t = setTimeout(() => {
+        el.classList.remove("card-beat");
+      }, dur);
+      timers.set(el, t);
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
 })();

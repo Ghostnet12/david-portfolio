@@ -1,7 +1,6 @@
 // === Config ===
 const CONTACT_EMAIL = "nortda85@gmail.com";
 const YT_VIDEO_ID = "RXr7lQxxtzM"; // YouTube music ID
-// Tweak in console if needed: window.MUSIC_BPM = 100;
 window.MUSIC_BPM = window.MUSIC_BPM || 100;
 
 const REDUCE_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -116,7 +115,7 @@ window.addEventListener('orientationchange', () => {
   window.addEventListener("resize",onResize,{ passive:true });
 })();
 
-/* === Beat helper for sync triggers === */
+/* Beat helper */
 const Beat = (() => {
   let player=null, ready=false, playing=false, beatOffset=0;
   let bpm = Math.max(60, Math.min(180, window.MUSIC_BPM || 100));
@@ -138,8 +137,8 @@ const Beat = (() => {
     let t=0; try{ t = player.getCurrentTime() || 0; }catch{ t=0; }
     const period = 60 / bpm;
     let phase = (t - beatOffset) % period; if (phase < 0) phase += period;
-    const x = phase / period;              // 0..1
-    const windowWidth = 0.18;              // attack window
+    const x = phase / period;
+    const windowWidth = 0.18;
     const gain = 0.9;
     if (x > windowWidth) return 0;
     const normalized = 1 - (x / windowWidth);
@@ -232,7 +231,7 @@ const Beat = (() => {
   window.addEventListener("scroll",onScroll,{ passive:true });
 })();
 
-/* === YouTube Background Music (autoplay @ ~7%, with nudge fallback) === */
+/* YouTube Background Music (autoplay attempt @ ~7%, with nudge fallback) */
 (function music(){
   const panel=document.createElement("div");
   panel.id="music-panel";
@@ -296,7 +295,6 @@ const Beat = (() => {
     }
   }
 
-  // Controls
   playBtn.addEventListener("click", ()=>{
     if(!ready) return;
     try{
@@ -320,7 +318,7 @@ const Beat = (() => {
 
 })();
 
-/* === About cards: one-at-a-time random beat accent === */
+/* About cards: one-at-a-time random beat accent */
 (function cardsBeat(){
   if (REDUCE_MOTION) return;
   const cards = Array.from(document.querySelectorAll('#about .neon-card'));
@@ -344,10 +342,8 @@ const Beat = (() => {
       const i = pickNext();
       lastCardIndex = i;
       const el = cards[i];
-      // clear any existing timer on this card
       if (timers.has(el)) clearTimeout(timers.get(el));
       el.classList.add('card-beat');
-      // keep it brief and subtle
       const dur = 160;
       const t = setTimeout(()=>{ el.classList.remove('card-beat'); }, dur);
       timers.set(el, t);

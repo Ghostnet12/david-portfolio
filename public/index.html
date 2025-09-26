@@ -29,13 +29,13 @@
     <!-- Tailwind CSS CDN (dev). For production, build Tailwind and purge. -->
     <script src="https://cdn.tailwindcss.com" defer></script>
 
-    <!-- Google Fonts - Inter (swap to avoid FOIT) -->
+    <!-- Google Fonts - Inter -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Font Awesome (defer load via media swap to avoid render-block) -->
+    <!-- Font Awesome (defer load via media swap) -->
     <link
       rel="preload"
       as="style"
@@ -216,7 +216,7 @@
           About Me
         </h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 items-start mb-20">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 items-start mb-12">
           <div class="flex justify-center md:col-span-1">
             <div class="relative w-64 h-64">
               <div
@@ -240,7 +240,7 @@
               >. I bridge the gap between user-centric design and robust
               development.
             </p>
-            <p class="text-slate-300 text-lg mb-6 leading-relaxed">
+            <p class="text-slate-300 text-lg mb-2 leading-relaxed">
               I specialize in the
               <strong class="text-white"
                 >MERN stack (MongoDB, Express.js, React, Node.js)</strong
@@ -248,6 +248,16 @@
               devices.
             </p>
           </div>
+        </div>
+
+        <!-- ✨ BRIDGE LINE: requested phrase -->
+        <div class="section-bridge lazy-load" aria-label="skills intro">
+          <span class="line" aria-hidden="true"></span>
+          <span class="label"
+            >Skills, certificates, and degrees I have acquired along my
+            journey.</span
+          >
+          <span class="line" aria-hidden="true"></span>
         </div>
 
         <!-- Skills -->

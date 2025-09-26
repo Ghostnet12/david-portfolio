@@ -606,14 +606,7 @@ footer .container {
   max-width: 100% !important;
 }
 
-/* Extra breathing room before Skills (fluid, responsive) */
-.skills-breath {
-  margin-top: clamp(2.5rem, 7vw, 5rem);
-}
 @media (max-height: 480px) {
-  .skills-breath {
-    margin-top: clamp(1.25rem, 4vw, 2rem);
-  }
   .neon-card:hover {
     transform: translateY(-2px);
   }

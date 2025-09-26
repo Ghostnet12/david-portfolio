@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <title>
       David Northrop - Digital Product Designer & MERN Stack Developer
     </title>
@@ -11,21 +14,38 @@
       content="David Northrop - Digital Product Designer & MERN Stack Developer specializing in creating exceptional digital experiences"
     />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts - Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- Performance hints -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Preload hero image to avoid LCP jank -->
+    <link
+      rel="preload"
+      as="image"
+      href="https://img.freepik.com/free-photo/html-css-collage-concept_23-2150061955.jpg?semt=ais_incoming&w=1200&q=80"
+    />
+
+    <!-- Tailwind CSS CDN (dev). For production, build Tailwind and purge. -->
+    <script src="https://cdn.tailwindcss.com" defer></script>
+
+    <!-- Google Fonts - Inter (swap to avoid FOIT) -->
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Font Awesome -->
+    <!-- Font Awesome (defer load via media swap to avoid render-block) -->
+    <link
+      rel="preload"
+      as="style"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      media="print"
+      onload="this.media='all'"
       crossorigin="anonymous"
     />
 
@@ -33,11 +53,14 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
 
-  <body class="bg-white text-gray-900 font-inter antialiased">
+  <body class="bg-slate-950 text-slate-100 font-inter antialiased neon-bg">
+    <!-- Starfield (fixed, behind content) -->
+    <canvas id="starfield" aria-hidden="true"></canvas>
+
     <!-- Navigation -->
     <nav
       id="navbar"
-      class="fixed w-full top-0 z-50 bg-white bg-opacity-95 backdrop-blur-lg border-b border-gray-200 transition-shadow duration-300 shadow-md"
+      class="fixed w-full top-0 z-50 bg-slate-900/70 backdrop-blur-lg border-b border-slate-800 transition-shadow duration-300 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.6)]"
     >
       <div
         class="container mx-auto px-6 py-4 flex justify-between items-center"
@@ -49,73 +72,74 @@
           <li>
             <a
               href="#home"
-              class="text-gray-900 font-medium relative nav-link-underline"
+              class="text-slate-100/90 hover:text-white font-medium relative nav-link-underline"
               >Home</a
             >
           </li>
           <li>
             <a
               href="#about"
-              class="text-gray-900 font-medium relative nav-link-underline"
+              class="text-slate-100/90 hover:text-white font-medium relative nav-link-underline"
               >About</a
             >
           </li>
           <li>
             <a
               href="#portfolio"
-              class="text-gray-900 font-medium relative nav-link-underline"
+              class="text-slate-100/90 hover:text-white font-medium relative nav-link-underline"
               >Portfolio</a
             >
           </li>
           <li>
             <a
               href="#contact"
-              class="text-gray-900 font-medium relative nav-link-underline"
+              class="text-slate-100/90 hover:text-white font-medium relative nav-link-underline"
               >Contact</a
             >
           </li>
         </ul>
-        <!-- Mobile menu button -->
         <button
           id="mobile-menu-button"
-          class="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700"
+          class="md:hidden text-slate-300 hover:text-white focus:outline-none"
           aria-label="Toggle mobile menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
         >
-          <i class="fas fa-bars text-2xl"></i>
+          <i class="fas fa-bars text-2xl" aria-hidden="true"></i>
         </button>
       </div>
 
       <!-- Mobile menu -->
       <div
         id="mobile-menu"
-        class="mobile-menu md:hidden bg-white w-full overflow-hidden"
+        class="mobile-menu md:hidden bg-slate-900/95 w-full overflow-hidden"
       >
         <ul class="py-4 px-6 space-y-4">
           <li>
             <a
               href="#home"
-              class="block py-2 text-gray-900 font-medium mobile-menu-link"
+              class="block py-2 text-slate-100 font-medium mobile-menu-link"
               >Home</a
             >
           </li>
           <li>
             <a
               href="#about"
-              class="block py-2 text-gray-900 font-medium mobile-menu-link"
+              class="block py-2 text-slate-100 font-medium mobile-menu-link"
               >About</a
             >
           </li>
           <li>
             <a
               href="#portfolio"
-              class="block py-2 text-gray-900 font-medium mobile-menu-link"
+              class="block py-2 text-slate-100 font-medium mobile-menu-link"
               >Portfolio</a
             >
           </li>
           <li>
             <a
               href="#contact"
-              class="block py-2 text-gray-900 font-medium mobile-menu-link"
+              class="block py-2 text-slate-100 font-medium mobile-menu-link"
               >Contact</a
             >
           </li>
@@ -123,18 +147,17 @@
       </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <section
       id="home"
-      class="min-h-screen hero-bg-image flex items-center pt-20 pb-12 overflow-hidden"
+      class="min-h-screen hero-bg-image flex items-center pt-20 pb-12 overflow-hidden cv-auto"
     >
       <div
         class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center hero-content"
       >
-        <!-- Hero Text -->
         <div class="text-white">
           <h1
-            class="text-5xl md:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-up"
+            class="text-5xl md:text-6xl font-extrabold leading-tight mb-4 animate-fade-in-up neon-title"
           >
             David Northrop
           </h1>
@@ -145,42 +168,62 @@
             I craft exceptional digital experiences that blend stunning design
             with powerful functionality. Specializing in the
             <span class="font-bold">MERN stack</span>, I transform ideas into
-            scalable applications with intuitive interfaces.
+            scalable apps with intuitive interfaces.
           </p>
           <div class="flex flex-wrap gap-4 animate-fade-in-up">
-            <a
-              href="#portfolio"
-              class="bg-white text-blue-600 font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-center gap-2"
+            <a href="#portfolio" class="btn-primary flex items-center gap-2"
+              ><i class="fas fa-eye"></i> View My Work</a
             >
-              <i class="fas fa-eye"></i> View My Work
-            </a>
-            <a
-              href="#contact"
-              class="bg-white bg-opacity-20 text-white font-semibold px-8 py-4 rounded-xl border-2 border-white border-opacity-30 hover:bg-opacity-30 hover:border-opacity-50 transition-all duration-300 flex items-center gap-2"
+            <a href="#contact" class="btn-ghost flex items-center gap-2"
+              ><i class="fas fa-handshake"></i> Let's Collaborate</a
             >
-              <i class="fas fa-handshake"></i> Let's Collaborate
-            </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="py-20 md:py-32 bg-gray-50">
+    <!-- Credit Ticker (under hero) -->
+    <section id="credit" class="credit-banner cv-auto">
+      <div class="container mx-auto px-6">
+        <div class="ticker lazy-load" aria-label="Site credit">
+          <div class="ticker__inner" style="--speed: 18s">
+            <ul class="ticker__list">
+              <li class="ticker__item">
+                Made by <strong>Instant Canvas</strong>
+              </li>
+              <li class="dot">•</li>
+              <li class="ticker__item">DELEVOPER</li>
+              <li class="dot">•</li>
+              <li class="ticker__item">ESPRESSO</li>
+              <li class="dot">•</li>
+              <li class="ticker__item">CODE</li>
+              <li class="dot">•</li>
+              <li class="ticker__item">REPEAT</li>
+              <li class="dot">•</li>
+            </ul>
+            <!-- JS clones enough lists for a seamless loop with even segment gaps -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="py-20 md:py-32 bg-transparent cv-auto">
       <div class="container mx-auto px-6 lazy-load">
         <h2
-          class="text-4xl md:text-5xl font-extrabold text-center mb-16 bg-gradient-to-r from-blue-600 to-purple-800 bg-clip-text text-transparent"
+          class="text-4xl md:text-5xl font-extrabold text-center mb-16 neon-gradient"
         >
           About Me
         </h2>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-12 items-start mb-20">
           <div class="flex justify-center md:col-span-1">
             <div class="relative w-64 h-64">
               <div
-                class="profile-ring absolute -inset-3 rounded-full border-4 border-blue-400"
+                class="profile-ring absolute -inset-3 rounded-full border-4 border-sky-400/60"
               ></div>
               <div
-                class="w-full h-full rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center text-white text-5xl font-extrabold shadow-2xl"
+                class="w-full h-full rounded-full bg-gradient-to-tr from-sky-500 to-fuchsia-600 flex items-center justify-center text-white text-5xl font-extrabold shadow-2xl"
               >
                 DN
               </div>
@@ -190,250 +233,205 @@
             <h3 class="text-3xl font-bold mb-4">
               Creative Technologist & Problem Solver
             </h3>
-            <p class="text-gray-600 text-lg mb-6 leading-relaxed">
+            <p class="text-slate-300 text-lg mb-6 leading-relaxed">
               Hello! I'm David Northrop, a passionate
-              <strong class="text-gray-900"
+              <strong class="text-white"
                 >Digital Product Designer and Full-Stack Web Developer</strong
-              >. My unique background allows me to bridge the gap between
-              beautiful, user-centric design and robust, functional development.
+              >. I bridge the gap between user-centric design and robust
+              development.
             </p>
-            <p class="text-gray-600 text-lg mb-6 leading-relaxed">
+            <p class="text-slate-300 text-lg mb-6 leading-relaxed">
               I specialize in the
-              <strong class="text-gray-900"
+              <strong class="text-white"
                 >MERN stack (MongoDB, Express.js, React, Node.js)</strong
-              >, building scalable, component-based web applications. I handle
-              the entire development lifecycle, from designing RESTful APIs to
-              implementing responsive front-end components, ensuring a seamless
-              user experience across all devices.
+              >, building scalable, component-based web applications across
+              devices.
             </p>
           </div>
         </div>
 
-        <!-- Skills Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <!-- Design Skills -->
-          <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
-          >
-            <div class="text-4xl mb-4 text-blue-600">
+        <!-- Skills -->
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 cv-auto"
+        >
+          <div class="neon-card neon-sky p-8 rounded-2xl text-center lazy-load">
+            <div class="text-4xl mb-4 text-sky-400">
               <i class="fab fa-figma"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">UI/UX Design</h4>
-            <p class="text-gray-500">Expert Level</p>
+            <p class="text-slate-400">Expert Level</p>
           </div>
+
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-fuchsia p-8 rounded-2xl text-center lazy-load"
           >
-            <div class="text-4xl mb-4 text-purple-600">
+            <div class="text-4xl mb-4 text-fuchsia-400">
               <i class="fas fa-graduation-cap"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">
               Bachelor's in Graphic Design
             </h4>
-            <p class="text-gray-500">Magna cum laude</p>
+            <p class="text-slate-400">Magna cum laude</p>
           </div>
+
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-pink p-8 rounded-2xl text-center lazy-load"
           >
-            <div class="text-4xl mb-4 text-pink-600">
+            <div class="text-4xl mb-4 text-pink-400">
               <i class="fas fa-palette"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">Branding & Identity</h4>
-            <p class="text-gray-500">Advanced Level</p>
+            <p class="text-slate-400">Advanced Level</p>
           </div>
+
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-purple p-8 rounded-2xl text-center lazy-load"
           >
-            <div class="text-4xl mb-4 text-purple-600">
+            <div class="text-4xl mb-4 text-purple-400">
               <i class="fab fa-adobe"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">Adobe Creative Suite</h4>
-            <p class="text-gray-500">Expert Level</p>
+            <p class="text-slate-400">Expert Level</p>
           </div>
 
-          <!-- Development Skills -->
-          <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
-          >
-            <div class="text-4xl mb-4 text-blue-600">
+          <div class="neon-card neon-sky p-8 rounded-2xl text-center lazy-load">
+            <div class="text-4xl mb-4 text-sky-400">
               <i class="fab fa-react"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">React & Next.js</h4>
-            <p class="text-gray-500">Expert Level</p>
+            <p class="text-slate-400">Expert Level</p>
           </div>
+
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-amber p-8 rounded-2xl text-center lazy-load"
           >
-            <div class="text-4xl mb-4 text-orange-500">
+            <div class="text-4xl mb-4 text-orange-400">
               <i class="fab fa-html5"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">HTML5 & CSS3</h4>
-            <p class="text-gray-500">Expert Level</p>
+            <p class="text-slate-400">Expert Level</p>
           </div>
+
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-yellow p-8 rounded-2xl text-center lazy-load"
           >
-            <div class="text-4xl mb-4 text-yellow-500">
+            <div class="text-4xl mb-4 text-yellow-300">
               <i class="fab fa-js-square"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">JavaScript (ES6+)</h4>
-            <p class="text-gray-500">Expert Level</p>
+            <p class="text-slate-400">Expert Level</p>
           </div>
 
-          <!-- TripleTen Certificate -->
-          <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
-          >
-            <div class="text-4xl mb-4 text-blue-500">
+          <div class="neon-card neon-sky p-8 rounded-2xl text-center lazy-load">
+            <div class="text-4xl mb-4 text-sky-300">
               <i class="fas fa-graduation-cap"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">TripleTen Certificate</h4>
-            <p class="text-gray-500">Full-Stack Web Developer</p>
+            <p class="text-slate-400">Full-Stack Web Developer</p>
           </div>
 
-          <!-- Back-End Skills -->
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-green p-8 rounded-2xl text-center lazy-load"
           >
-            <div class="text-4xl mb-4 text-green-600">
+            <div class="text-4xl mb-4 text-green-400">
               <i class="fab fa-node-js"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">Node.js & Express</h4>
-            <p class="text-gray-500">Expert Level</p>
+            <p class="text-slate-400">Expert Level</p>
           </div>
+
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-blue p-8 rounded-2xl text-center lazy-load"
           >
-            <div class="text-4xl mb-4 text-blue-800">
+            <div class="text-4xl mb-4 text-blue-300">
               <i class="fas fa-database"></i>
             </div>
-            <h4 class="text-xl font-semibold mb-1">MongoDB</h4>
-            <p class="text-gray-500">Advanced Level</p>
+            <h4 class="text-2xl font-bold mb-1">MongoDB</h4>
+            <p class="text-slate-400">Advanced Level</p>
           </div>
+
           <div
-            class="bg-white p-8 rounded-2xl shadow-lg text-center transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-slate p-8 rounded-2xl text-center lazy-load"
           >
-            <div class="text-4xl mb-4 text-gray-800">
+            <div class="text-4xl mb-4 text-slate-300">
               <i class="fab fa-git-alt"></i>
             </div>
             <h4 class="text-xl font-semibold mb-1">Git & GitHub</h4>
-            <p class="text-gray-500">Advanced Level</p>
+            <p class="text-slate-400">Advanced Level</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Portfolio Section -->
-    <section id="portfolio" class="py-20 md:py-32 bg-white">
+    <!-- Portfolio -->
+    <section id="portfolio" class="py-20 md:py-32 bg-transparent cv-auto">
       <div class="container mx-auto px-6 lazy-load">
         <h2
-          class="text-4xl md:text-5xl font-extrabold text-center mb-16 bg-gradient-to-r from-purple-600 to-red-600 bg-clip-text text-transparent"
+          class="text-4xl md:text-5xl font-extrabold text-center mb-16 neon-gradient-2"
         >
           Featured Projects
         </h2>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div
-            class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-pink overflow-hidden rounded-2xl transition-transform duration-300 lazy-load"
           >
             <div
-              class="h-64 bg-gradient-to-br from-pink-400 to-red-500 flex items-center justify-center text-white text-5xl"
+              class="h-64 card-top flex items-center justify-center text-white text-5xl"
             >
               <i class="fas fa-shopping-cart"></i>
             </div>
             <div class="p-8">
               <h3 class="text-2xl font-bold mb-2">E-Commerce Platform</h3>
-              <p class="text-gray-600 mb-4">
-                Full-featured MERN stack shopping platform with user
-                authentication, payment processing, and real-time inventory
-                management.
+              <p class="text-slate-300 mb-4">
+                Full-featured MERN stack shopping platform with auth, payments
+                and realtime inventory.
               </p>
-              <div class="flex flex-wrap gap-2">
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >React</span
-                >
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >Node.js</span
-                >
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >MongoDB</span
-                >
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >Stripe</span
-                >
+              <div class="flex flex-wrap gap-2 text-sm">
+                <span class="pill">React</span><span class="pill">Node.js</span
+                ><span class="pill">MongoDB</span
+                ><span class="pill">Stripe</span>
               </div>
             </div>
           </div>
 
           <div
-            class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-indigo overflow-hidden rounded-2xl transition-transform duration-300 lazy-load"
           >
             <div
-              class="h-64 bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-white text-5xl"
+              class="h-64 card-top flex items-center justify-center text-white text-5xl"
             >
               <i class="fas fa-tasks"></i>
             </div>
             <div class="p-8">
               <h3 class="text-2xl font-bold mb-2">Project Management Tool</h3>
-              <p class="text-gray-600 mb-4">
-                Collaborative app with real-time updates, drag-and-drop
-                functionality, and comprehensive team collaboration features.
+              <p class="text-slate-300 mb-4">
+                Realtime collaboration, drag-and-drop and team workflows.
               </p>
-              <div class="flex flex-wrap gap-2">
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >React</span
-                >
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >Socket.io</span
-                >
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >Express</span
-                >
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >MUI</span
-                >
+              <div class="flex flex-wrap gap-2 text-sm">
+                <span class="pill">React</span
+                ><span class="pill">Socket.io</span
+                ><span class="pill">Express</span><span class="pill">MUI</span>
               </div>
             </div>
           </div>
 
           <div
-            class="bg-white rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 hover:-translate-y-2 lazy-load"
+            class="neon-card neon-teal overflow-hidden rounded-2xl transition-transform duration-300 lazy-load"
           >
             <div
-              class="h-64 bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center text-white text-5xl"
+              class="h-64 card-top flex items-center justify-center text-white text-5xl"
             >
               <i class="fas fa-chart-line"></i>
             </div>
             <div class="p-8">
               <h3 class="text-2xl font-bold mb-2">Analytics Dashboard</h3>
-              <p class="text-gray-600 mb-4">
-                Comprehensive data visualization dashboard with interactive
-                charts and real-time metrics tracking.
+              <p class="text-slate-300 mb-4">
+                Interactive charts, real-time metrics, clean data UX.
               </p>
-              <div class="flex flex-wrap gap-2">
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >React</span
-                >
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >D3.js</span
-                >
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >Chart.js</span
-                >
-                <span
-                  class="bg-gray-100 text-blue-600 text-sm font-medium px-3 py-1 rounded-full"
-                  >Node.js</span
-                >
+              <div class="flex flex-wrap gap-2 text-sm">
+                <span class="pill">React</span><span class="pill">D3.js</span
+                ><span class="pill">Chart.js</span
+                ><span class="pill">Node.js</span>
               </div>
             </div>
           </div>
@@ -441,72 +439,64 @@
       </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="py-20 md:py-32 bg-gray-50">
+    <!-- Contact -->
+    <section id="contact" class="py-20 md:py-32 bg-transparent cv-auto">
       <div class="container mx-auto px-6 lazy-load">
         <h2
-          class="text-4xl md:text-5xl font-extrabold text-center mb-16 bg-gradient-to-r from-blue-600 to-purple-800 bg-clip-text text-transparent"
+          class="text-4xl md:text-5xl font-extrabold text-center mb-16 neon-gradient"
         >
           Let's Work Together
         </h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          <!-- Contact Info -->
           <div class="space-y-6">
-            <p class="text-gray-600 mb-4 leading-relaxed">
-              I'm always interested in new opportunities and collaborations.
-              Whether you have a project in mind or just want to connect!
-            </p>
             <div
-              class="flex items-center gap-4 bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:translate-x-2"
+              class="neon-card neon-indigo p-6 rounded-xl flex items-center gap-4"
             >
               <div
-                class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-full text-xl flex-shrink-0"
+                class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-sky-500 to-fuchsia-600 text-white rounded-full text-xl shrink-0"
               >
                 <i class="fas fa-envelope"></i>
               </div>
               <div>
-                <strong class="block text-gray-900 font-semibold">Email</strong>
-                <span class="text-gray-600">nortda85@gmail.com</span>
+                <strong class="block text-white font-semibold">Email</strong
+                ><span class="text-slate-300">nortda85@gmail.com</span>
               </div>
             </div>
             <div
-              class="flex items-center gap-4 bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:translate-x-2"
+              class="neon-card neon-teal p-6 rounded-xl flex items-center gap-4"
             >
               <div
-                class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-full text-xl flex-shrink-0"
+                class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-teal-500 to-sky-600 text-white rounded-full text-xl shrink-0"
               >
                 <i class="fas fa-map-marker-alt"></i>
               </div>
               <div>
-                <strong class="block text-gray-900 font-semibold"
-                  >Location</strong
-                >
-                <span class="text-gray-600">United States</span>
+                <strong class="block text-white font-semibold">Location</strong
+                ><span class="text-slate-300">United States</span>
               </div>
             </div>
             <div
-              class="flex items-center gap-4 bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:translate-x-2"
+              class="neon-card neon-pink p-6 rounded-xl flex items-center gap-4"
             >
               <div
-                class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-full text-xl flex-shrink-0"
+                class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-pink-500 to-fuchsia-600 text-white rounded-full text-xl shrink-0"
               >
                 <i class="fas fa-clock"></i>
               </div>
               <div>
-                <strong class="block text-gray-900 font-semibold"
+                <strong class="block text-white font-semibold"
                   >Response Time</strong
-                >
-                <span class="text-gray-600">Within 24 hours</span>
+                ><span class="text-slate-300">Within 24 hours</span>
               </div>
             </div>
           </div>
-          <!-- Contact Form -->
-          <div class="bg-white p-8 rounded-2xl shadow-xl">
+
+          <div class="neon-card neon-blue p-8 rounded-2xl">
             <form id="contactForm" class="space-y-6">
               <div>
                 <label
                   for="name"
-                  class="block text-sm font-semibold text-gray-700 mb-2"
+                  class="block text-sm font-semibold text-slate-200 mb-2"
                   >Your Name</label
                 >
                 <input
@@ -514,13 +504,13 @@
                   id="name"
                   name="name"
                   required
-                  class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-blue-500 transition-colors bg-gray-50"
+                  class="input-dark"
                 />
               </div>
               <div>
                 <label
                   for="email"
-                  class="block text-sm font-semibold text-gray-700 mb-2"
+                  class="block text-sm font-semibold text-slate-200 mb-2"
                   >Your Email</label
                 >
                 <input
@@ -528,13 +518,13 @@
                   id="email"
                   name="email"
                   required
-                  class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-blue-500 transition-colors bg-gray-50"
+                  class="input-dark"
                 />
               </div>
               <div>
                 <label
                   for="subject"
-                  class="block text-sm font-semibold text-gray-700 mb-2"
+                  class="block text-sm font-semibold text-slate-200 mb-2"
                   >Subject</label
                 >
                 <input
@@ -542,26 +532,23 @@
                   id="subject"
                   name="subject"
                   required
-                  class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-blue-500 transition-colors bg-gray-50"
+                  class="input-dark"
                 />
               </div>
               <div>
                 <label
                   for="message"
-                  class="block text-sm font-semibold text-gray-700 mb-2"
+                  class="block text-sm font-semibold text-slate-200 mb-2"
                   >Message</label
                 >
                 <textarea
                   id="message"
                   name="message"
                   required
-                  class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-blue-500 transition-colors bg-gray-50 h-32 resize-y"
+                  class="textarea-dark h-32"
                 ></textarea>
               </div>
-              <button
-                type="submit"
-                class="w-full bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 transition-all duration-300"
-              >
+              <button type="submit" class="btn-primary w-full">
                 <i class="fas fa-paper-plane"></i> Send Message
               </button>
             </form>
@@ -571,46 +558,28 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-12">
+    <footer class="bg-slate-950 text-white py-12">
       <div class="container mx-auto px-6 text-center">
         <div class="flex justify-center space-x-6 mb-6">
-          <a
-            href="#"
-            class="w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-full text-lg hover:bg-blue-700 transition-colors duration-300"
-            aria-label="LinkedIn"
-          >
-            <i class="fab fa-linkedin-in"></i>
-          </a>
-          <a
-            href="#"
-            class="w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-full text-lg hover:bg-blue-700 transition-colors duration-300"
-            aria-label="GitHub"
-          >
-            <i class="fab fa-github"></i>
-          </a>
-          <a
-            href="#"
-            class="w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-full text-lg hover:bg-blue-700 transition-colors duration-300"
-            aria-label="Dribbble"
-          >
-            <i class="fab fa-dribbble"></i>
-          </a>
-          <a
-            href="#"
-            class="w-12 h-12 flex items-center justify-center bg-blue-600 text-white rounded-full text-lg hover:bg-blue-700 transition-colors duration-300"
-            aria-label="Twitter"
-          >
-            <i class="fab fa-twitter"></i>
-          </a>
+          <a href="#" class="social" aria-label="LinkedIn"
+            ><i class="fab fa-linkedin-in"></i
+          ></a>
+          <a href="#" class="social" aria-label="GitHub"
+            ><i class="fab fa-github"></i
+          ></a>
+          <a href="#" class="social" aria-label="Dribbble"
+            ><i class="fab fa-dribbble"></i
+          ></a>
+          <a href="#" class="social" aria-label="Twitter"
+            ><i class="fab fa-twitter"></i
+          ></a>
         </div>
-        <p class="text-gray-400 text-sm">
-          &copy; 2025 David Northrop. All rights reserved. | Digital Product
-          Designer & Full-Stack Web Developer
+        <p class="text-slate-400 text-sm">
+          &copy; 2025 David Northrop. All rights reserved.
         </p>
       </div>
     </footer>
 
-    <!-- Your scripts -->
     <script defer src="script.js"></script>
   </body>
 </html>

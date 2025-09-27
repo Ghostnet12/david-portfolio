@@ -33,7 +33,6 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
-      --
     />
 
     <!-- Font Awesome (defer load via media swap to avoid render-block) -->
@@ -223,18 +222,16 @@
               <div
                 class="profile-ring absolute -inset-3 rounded-full border-4 border-sky-400/60"
               ></div>
-              <!-- profile image block -->
-              <div
-                class="w-full h-full rounded-full overflow-hidden shadow-2xl"
-              >
+              <!-- ONLY CHANGED BLOCK: replace initials with circular image -->
+              <div class="w-full h-full rounded-full overflow-hidden shadow-2xl">
                 <img
-                  src="Assets/IMG_3057.JPG"
+                  src="IMG_3057.JPG"
                   alt="David Northrop portrait"
                   class="w-full h-full object-cover"
                   loading="eager"
                 />
               </div>
-              <!-- end profile image block -->
+              <!-- END CHANGE -->
             </div>
           </div>
           <div class="md:col-span-2 text-center md:text-left">

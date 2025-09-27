@@ -613,3 +613,150 @@ const Beat = (() => {
   };
   requestAnimationFrame(tick);
 })();
+
+/* ================== Minimal neon halo (bass-driven, low cap) ================== */
+(() => {
+  const ring = document.querySelector("#about .profile-ring");
+  if (!ring) return;
+
+  // start fully minimal
+  ring.style.setProperty("--ringColor", "#22d3ee");
+  ring.style.setProperty("--hazeAlpha", "0.00");
+  ring.style.setProperty("--glowAlpha", "0.00");
+
+  const audio =
+    document.getElementById("bgm") || document.querySelector("audio");
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  // Keep hue interesting without cranking intensity
+  const colorFromLevel = (level) => {
+    const drift = (performance.now() / 50) % 360;
+    const hue = (220 + level * 80 + drift) % 360; // cyan→violet range
+    const light = Math.min(60, 38 + level * 18);
+    return `hsl(${hue} 100% ${light}%)`;
+  };
+
+  // Strictly LOW output: max haze/glow are capped to subtle values
+  const MAX_HAZE = 0.18;
+  const MAX_GLOW = 0.22;
+
+  function applyGlow(level) {
+    // gate and compress so it dies to zero on silence, never blasts
+    const gated = Math.max(0, level - 0.03) / 0.97;
+    const env = Math.pow(gated, 1.35); // gentle curve
+
+    ring.style.setProperty("--ringColor", colorFromLevel(env));
+    ring.style.setProperty("--hazeAlpha", (env * MAX_HAZE).toFixed(3));
+    ring.style.setProperty("--glowAlpha", (env * MAX_GLOW).toFixed(3));
+  }
+
+  function fallbackCycle() {
+    // If we can't analyze audio (e.g., YouTube iframe), still stay very subtle
+    const loop = () => {
+      const t = performance.now() / 1000;
+      const env = (Math.sin(t * 0.8) + 1) / 2; // 0..1
+      applyGlow(env * 0.35); // extra cap in fallback
+      requestAnimationFrame(loop);
+    };
+    loop();
+  }
+
+  async function attachAnalyser(el) {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioCtx();
+      const source = ctx.createMediaElementSource(el);
+
+      const lows = ctx.createBiquadFilter();
+      lows.type = "lowshelf";
+      lows.frequency.value = 140;
+      lows.gain.value = 14;
+
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      const data = new Uint8Array(analyser.frequencyBinCount);
+
+      source.connect(lows);
+      lows.connect(analyser);
+      analyser.connect(ctx.destination);
+
+      let env = 0;
+      const attack = 0.45,
+        release = 0.1;
+
+      const tick = () => {
+        analyser.getByteFrequencyData(data);
+        const n = Math.min(12, data.length);
+        let sum = 0;
+        for (let i = 0; i < n; i++) sum += data[i];
+        const bass = sum / n / 255;
+        const gated = Math.max(0, bass - 0.03) / 0.97;
+        env = lerp(env, gated, gated > env ? attack : release);
+        applyGlow(env);
+        requestAnimationFrame(tick);
+      };
+
+      el.addEventListener("play", () => ctx.resume());
+      requestAnimationFrame(tick);
+    } catch (e) {
+      console.warn("Halo analyser unavailable; using subtle fallback.", e);
+      fallbackCycle();
+    }
+  }
+
+  if (audio) {
+    if (audio.readyState >= 2) attachAnalyser(audio);
+    else
+      audio.addEventListener("canplay", () => attachAnalyser(audio), {
+        once: true,
+      });
+  } else {
+    fallbackCycle();
+  }
+})();
+
+/* ================== Pixel-perfect seamless ticker ================== */
+(() => {
+  const inner = document.querySelector(".ticker .ticker__inner");
+  if (!inner) return;
+
+  const SPEED_PX_PER_SEC = 90; // constant speed regardless of content width
+  let resizeId;
+
+  function setup() {
+    // 1) Clean previous clones
+    [...inner.querySelectorAll(".ticker__list.clone")].forEach((n) =>
+      n.remove()
+    );
+
+    // 2) Measure original list width
+    const list = inner.querySelector(".ticker__list");
+    if (!list) return;
+
+    // Force layout to be accurate
+    const w = Math.ceil(list.getBoundingClientRect().width);
+
+    // 3) Make exactly one clone so total track = 2 * w
+    const clone = list.cloneNode(true);
+    clone.classList.add("clone");
+    inner.appendChild(clone);
+
+    // 4) Set CSS vars for exact travel distance and duration
+    inner.style.setProperty("--dx", w + "px");
+    const durationMs = Math.round((w / SPEED_PX_PER_SEC) * 1000);
+    inner.style.setProperty("--speedMs", durationMs + "ms");
+
+    // 5) Kick animation
+    inner.classList.add("run");
+  }
+
+  function onResize() {
+    inner.classList.remove("run");
+    window.cancelAnimationFrame(resizeId);
+    // debounce a hair to avoid thrash on continuous resize
+    resizeId = window.requestAnimationFrame(setup);
+  }
+
+  window.addEventListener("load", setup, { once: true });
+  window.addEventListener("resize", onResize);
+})();

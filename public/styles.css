@@ -621,3 +621,194 @@ footer .container {
 #about .neon-card.card-beat::before {
   opacity: 0.58;
 }
+
+/* === Neon halo BEHIND the profile image, bass-driven ===================== */
+
+/* Layering: ring (z:1) | avatar image (z:2) | haze behind both (z:-1 on ring) */
+#about .profile-ring {
+  position: absolute;
+  inset: -12px; /* keep your ring slightly outside the avatar */
+  border-width: 4px;
+  border-style: solid;
+  border-radius: 9999px;
+  z-index: 1;
+
+  /* Live-updated by JS */
+  --ringColor: #22d3ee; /* neon */
+  --hazeAlpha: 0.35; /* 0..1 */
+  --glowAlpha: 0.4; /* 0..1 */
+
+  /* Border + neon glow (still visible above the haze) */
+  border-color: var(--ringColor);
+  box-shadow: 0 0 calc(10px + 12px * var(--glowAlpha)) var(--ringColor),
+    0 0 calc(28px + 36px * var(--glowAlpha)) var(--ringColor);
+  filter: drop-shadow(0 0 calc(20px * var(--glowAlpha)) var(--ringColor));
+
+  will-change: filter, box-shadow, border-color;
+  transition: border-color 60ms linear, box-shadow 60ms linear,
+    filter 60ms linear;
+}
+
+/* Put the avatar container above the ring’s border so the glow feels behind */
+#about .profile-ring + div {
+  position: relative;
+  z-index: 2;
+}
+
+/* Soft haze BEHIND everything (negative z-index within the ring’s stacking) */
+#about .profile-ring::before {
+  content: "";
+  position: absolute;
+  inset: -28px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    closest-side,
+    var(--ringColor) 0%,
+    transparent 62%
+  );
+  filter: blur(28px);
+  opacity: var(--hazeAlpha);
+  z-index: -1; /* <— this pushes the haze behind the photo */
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+/* === Bass-synced neon halo BEHIND profile image ========================= */
+
+/* The ring element that wraps your avatar */
+#about .profile-ring {
+  position: absolute;
+  inset: -12px; /* sits just outside the avatar circle */
+  border-width: 4px;
+  border-style: solid;
+  border-radius: 9999px;
+  z-index: 1;
+
+  /* Live values from JS */
+  --ringColor: #22d3ee; /* neon hue */
+  --hazeAlpha: 0; /* 0..1 — can hit 0 on silence */
+  --glowAlpha: 0; /* 0..1 — can hit 0 on silence */
+
+  /* Border + glow (glow strength scaled by --glowAlpha) */
+  border-color: var(--ringColor);
+  box-shadow: 0 0 calc(10px + 12px * var(--glowAlpha))
+      color-mix(in oklab, var(--ringColor), #000 0%),
+    0 0 calc(28px + 36px * var(--glowAlpha))
+      color-mix(in oklab, var(--ringColor), #000 0%);
+  filter: drop-shadow(0 0 calc(20px * var(--glowAlpha)) var(--ringColor));
+  will-change: filter, box-shadow, border-color;
+  transition: border-color 80ms linear, box-shadow 80ms linear,
+    filter 80ms linear;
+}
+
+/* Ensure the avatar container sits above the ring border */
+#about .profile-ring + div {
+  position: relative;
+  z-index: 2;
+}
+
+/* Soft neon haze BEHIND the avatar; fades fully to 0 with --hazeAlpha */
+#about .profile-ring::before {
+  content: "";
+  position: absolute;
+  inset: -28px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    closest-side,
+    var(--ringColor) 0%,
+    transparent 62%
+  );
+  filter: blur(28px);
+  opacity: var(--hazeAlpha); /* 0 on silence */
+  z-index: -1; /* <<< behind the photo */
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+/* ---------- Minimal neon halo behind avatar (stays low) ---------- */
+#about .profile-ring {
+  position: absolute;
+  inset: -12px;
+  border-width: 4px;
+  border-style: solid;
+  border-radius: 9999px;
+  z-index: 1;
+
+  /* Driven by JS (kept small) */
+  --ringColor: #22d3ee;
+  --hazeAlpha: 0; /* 0 on silence */
+  --glowAlpha: 0; /* 0 on silence */
+
+  border-color: var(--ringColor);
+  box-shadow: 0 0 calc(6px + 8px * var(--glowAlpha)) var(--ringColor),
+    0 0 calc(16px + 20px * var(--glowAlpha)) var(--ringColor);
+  filter: drop-shadow(0 0 calc(12px * var(--glowAlpha)) var(--ringColor));
+  will-change: filter, box-shadow, border-color;
+  transition: border-color 80ms linear, box-shadow 80ms linear,
+    filter 80ms linear;
+}
+
+/* Avatar above the ring border, haze behind */
+#about .profile-ring + div {
+  position: relative;
+  z-index: 2;
+}
+
+#about .profile-ring::before {
+  content: "";
+  position: absolute;
+  inset: -24px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    closest-side,
+    var(--ringColor) 0%,
+    transparent 62%
+  );
+  filter: blur(22px);
+  opacity: var(--hazeAlpha); /* kept small via JS */
+  z-index: -1; /* behind the photo */
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* ---------- Ultra-smooth ticker (GPU-accelerated) ---------- */
+.ticker {
+  --gap: 1.75rem;
+  --speedMs: 18000ms; /* JS will set exact duration for constant px/sec */
+  overflow: hidden;
+  contain: content;
+}
+
+.ticker__inner {
+  display: flex;
+  gap: var(--gap);
+  will-change: transform;
+  transform: translate3d(0, 0, 0); /* GPU nudge */
+  backface-visibility: hidden;
+}
+
+.ticker__list {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  flex: 0 0 auto; /* no flex shrink/grow -> stable width */
+  white-space: nowrap;
+  pointer-events: none; /* never trap pointer */
+}
+
+/* When JS computes widths, it toggles .run and animates exactly one full loop */
+.ticker__inner.run {
+  animation: ticker var(--speedMs) linear infinite;
+}
+
+@keyframes ticker {
+  to {
+    transform: translate3d(calc(-1 * var(--dx, 100%)), 0, 0);
+  }
+}
+
+/* Reduce motion preference respected */
+@media (prefers-reduced-motion: reduce) {
+  .ticker__inner.run {
+    animation: none;
+    transform: none !important;
+  }
+}
